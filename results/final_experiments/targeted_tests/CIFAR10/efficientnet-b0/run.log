@@ -1,0 +1,4 @@
+2026-09-11 14:45:23,019 | INFO | Pretrained baseline test start: dataset=CIFAR10 model=efficientnet-b0
+2026-09-11 14:48:38,672 | INFO | epoch=1 train_loss=1.039700 train_acc=0.640489 val_loss=0.674911 val_acc=0.766400
+2026-09-11 14:51:49,661 | INFO | epoch=2 train_loss=0.596756 train_acc=0.796578 val_loss=0.566547 val_acc=0.805800
+2026-09-11 14:55:04,549 | INFO | epoch=3 train_loss=0.459685 train_acc=0.843422 val_loss=0.547957 val_acc=0.809200

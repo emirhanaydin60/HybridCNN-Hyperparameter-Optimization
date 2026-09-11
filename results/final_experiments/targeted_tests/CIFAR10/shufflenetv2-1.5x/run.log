@@ -1,0 +1,4 @@
+2026-09-11 15:01:05,333 | INFO | Pretrained baseline test start: dataset=CIFAR10 model=shufflenetv2-1.5x
+2026-09-11 15:02:24,623 | INFO | epoch=1 train_loss=1.046256 train_acc=0.640000 val_loss=0.811136 val_acc=0.733800
+2026-09-11 15:03:38,189 | INFO | epoch=2 train_loss=0.662363 train_acc=0.775156 val_loss=0.823100 val_acc=0.744400
+2026-09-11 15:04:47,963 | INFO | epoch=3 train_loss=0.542621 train_acc=0.812089 val_loss=0.711078 val_acc=0.773400

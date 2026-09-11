@@ -59,7 +59,7 @@ def _replace_last_linear(model: nn.Module, out_features: int) -> Tuple[nn.Module
     return model, last_name
 
 
-def create_model(model_name: str, num_classes: int = 10, device: str = "cpu"):
+def create_model(model_name: str, num_classes: int = 10, device: str = "cpu", pretrained: bool = False):
     name = model_name.lower()
     # Optimized HybridCNN variants
     if name in ("hybridcnn_gwo_run1", "hybridcnn_gwo_run3", "hybridcnn_woa_run3"):
@@ -89,33 +89,49 @@ def create_model(model_name: str, num_classes: int = 10, device: str = "cpu"):
     import torchvision.models as tvmodels
 
     if name == "efficientnet-b0" or name == "efficientnet_b0":
-        # Newer torchvision uses weights=None; older use pretrained=False
-        try:
-            model = tvmodels.efficientnet_b0(weights=None)
-            weights_source = "weights=None"
-        except TypeError:
-            model = tvmodels.efficientnet_b0(pretrained=False)
-            weights_source = "pretrained=False"
+        # Support optional pretrained weights across torchvision versions
+        if pretrained:
+            # try new API first
+            try:
+                weights = tvmodels.EfficientNet_B0_Weights.DEFAULT
+                model = tvmodels.efficientnet_b0(weights=weights)
+            except Exception:
+                model = tvmodels.efficientnet_b0(pretrained=True)
+        else:
+            try:
+                model = tvmodels.efficientnet_b0(weights=None)
+            except TypeError:
+                model = tvmodels.efficientnet_b0(pretrained=False)
         model, last = _replace_last_linear(model, num_classes)
         return model.to(device)
 
     if name in ("mobilenetv3-large", "mobilenetv3_large", "mobilenet_v3_large"):
-        try:
-            model = tvmodels.mobilenet_v3_large(weights=None)
-            weights_source = "weights=None"
-        except TypeError:
-            model = tvmodels.mobilenet_v3_large(pretrained=False)
-            weights_source = "pretrained=False"
+        if pretrained:
+            try:
+                weights = tvmodels.MobileNet_V3_Large_Weights.DEFAULT
+                model = tvmodels.mobilenet_v3_large(weights=weights)
+            except Exception:
+                model = tvmodels.mobilenet_v3_large(pretrained=True)
+        else:
+            try:
+                model = tvmodels.mobilenet_v3_large(weights=None)
+            except TypeError:
+                model = tvmodels.mobilenet_v3_large(pretrained=False)
         model, last = _replace_last_linear(model, num_classes)
         return model.to(device)
 
     if name in ("shufflenetv2-1.5x", "shufflenet_v2_x1_5", "shufflenetv2_1.5x"):
-        try:
-            model = tvmodels.shufflenet_v2_x1_5(weights=None)
-            weights_source = "weights=None"
-        except TypeError:
-            model = tvmodels.shufflenet_v2_x1_5(pretrained=False)
-            weights_source = "pretrained=False"
+        if pretrained:
+            try:
+                weights = tvmodels.ShuffleNet_V2_X1_5_Weights.DEFAULT
+                model = tvmodels.shufflenet_v2_x1_5(weights=weights)
+            except Exception:
+                model = tvmodels.shufflenet_v2_x1_5(pretrained=True)
+        else:
+            try:
+                model = tvmodels.shufflenet_v2_x1_5(weights=None)
+            except TypeError:
+                model = tvmodels.shufflenet_v2_x1_5(pretrained=False)
         model, last = _replace_last_linear(model, num_classes)
         return model.to(device)
 

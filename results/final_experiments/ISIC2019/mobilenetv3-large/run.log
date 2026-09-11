@@ -1,0 +1,28 @@
+2026-09-10 02:27:35,279 | INFO | Starting experiment: dataset=ISIC2019 model=mobilenetv3-large hybrid=False lr=0.0012351628680148583 batch_size=32 seed=42
+2026-09-10 02:27:35,500 | INFO | Model built: total_params=4212280 trainable_params=4212280
+2026-09-10 02:39:35,701 | INFO | epoch=1 train_loss=1.241075 train_acc=0.547936 val_loss=1.578975 val_acc=0.377172
+2026-09-10 02:51:36,321 | INFO | epoch=2 train_loss=1.144086 train_acc=0.590402 val_loss=1.154448 val_acc=0.587678
+2026-09-10 03:03:41,458 | INFO | epoch=3 train_loss=1.100925 train_acc=0.603203 val_loss=1.052690 val_acc=0.626777
+2026-09-10 03:15:43,837 | INFO | epoch=4 train_loss=1.069630 train_acc=0.617246 val_loss=1.160108 val_acc=0.601106
+2026-09-10 03:27:46,236 | INFO | epoch=5 train_loss=1.033392 train_acc=0.626833 val_loss=1.051560 val_acc=0.610979
+2026-09-10 03:39:48,482 | INFO | epoch=6 train_loss=1.004290 train_acc=0.642680 val_loss=0.993732 val_acc=0.651264
+2026-09-10 03:51:52,648 | INFO | epoch=7 train_loss=0.967412 train_acc=0.654579 val_loss=1.010953 val_acc=0.643365
+2026-09-10 04:04:10,012 | INFO | epoch=8 train_loss=0.956519 train_acc=0.657399 val_loss=1.243220 val_acc=0.570695
+2026-09-10 04:16:26,251 | INFO | epoch=9 train_loss=0.922031 train_acc=0.671159 val_loss=0.960025 val_acc=0.650474
+2026-09-10 04:28:32,349 | INFO | epoch=10 train_loss=0.901372 train_acc=0.675333 val_loss=1.020660 val_acc=0.650079
+2026-09-10 04:40:40,879 | INFO | epoch=11 train_loss=0.881271 train_acc=0.683848 val_loss=1.376473 val_acc=0.558057
+2026-09-10 04:52:45,134 | INFO | epoch=12 train_loss=0.813136 train_acc=0.708550 val_loss=0.925848 val_acc=0.671406
+2026-09-10 05:04:55,546 | INFO | epoch=13 train_loss=0.753642 train_acc=0.728231 val_loss=0.894473 val_acc=0.680885
+2026-09-10 05:17:06,139 | INFO | epoch=14 train_loss=0.695337 train_acc=0.748985 val_loss=0.945708 val_acc=0.656793
+2026-09-10 05:29:16,847 | INFO | epoch=15 train_loss=0.655966 train_acc=0.762689 val_loss=0.953057 val_acc=0.667852
+2026-09-10 05:41:27,554 | INFO | epoch=16 train_loss=0.612191 train_acc=0.778310 val_loss=1.018898 val_acc=0.655213
+2026-09-10 05:53:38,412 | INFO | epoch=17 train_loss=0.565376 train_acc=0.797146 val_loss=1.048895 val_acc=0.656793
+2026-09-10 06:05:49,943 | INFO | epoch=18 train_loss=0.515419 train_acc=0.816659 val_loss=1.092842 val_acc=0.644945
+2026-09-10 06:18:00,562 | INFO | epoch=19 train_loss=0.378617 train_acc=0.864426 val_loss=1.205972 val_acc=0.661927
+2026-09-10 06:30:11,838 | INFO | epoch=20 train_loss=0.334143 train_acc=0.881852 val_loss=1.311969 val_acc=0.663112
+2026-09-10 06:42:23,151 | INFO | epoch=21 train_loss=0.276100 train_acc=0.902154 val_loss=1.477013 val_acc=0.657188
+2026-09-10 06:54:34,775 | INFO | epoch=22 train_loss=0.253877 train_acc=0.910896 val_loss=1.519803 val_acc=0.642575
+2026-09-10 07:06:46,028 | INFO | epoch=23 train_loss=0.210108 train_acc=0.927025 val_loss=1.577639 val_acc=0.666272
+2026-09-10 07:06:46,028 | INFO | early_stopping triggered at epoch=23
+2026-09-10 07:07:50,225 | INFO | Finished training: dataset=ISIC2019 model=mobilenetv3-large best_epoch=13 best_val_acc=0.680885 training_time=16750.5s total_time=16750.5s
+2026-09-10 07:07:50,225 | INFO | Test results: accuracy=0.6604 precision_macro=0.0000 recall_macro=0.0000 f1_macro=0.0000

@@ -1,0 +1,6 @@
+2026-09-09 15:28:02,940 | INFO | Running shufflenetv2-1.5x | batch_size=128
+2026-09-09 15:28:30,300 | INFO | epoch=1 train_loss=1.738330 train_acc=0.364844 val_loss=1.492580 val_acc=0.470800
+2026-09-09 15:28:57,217 | INFO | epoch=2 train_loss=1.327051 train_acc=0.523311 val_loss=1.298038 val_acc=0.539400
+2026-09-09 15:29:23,651 | INFO | epoch=3 train_loss=1.139691 train_acc=0.596556 val_loss=1.218479 val_acc=0.571800
+2026-09-09 16:48:57,137 | INFO | Running shufflenetv2-1.5x | batch_size=128
+2026-09-09 16:50:01,464 | INFO | epoch=1 train_loss=1.731678 train_acc=0.364289 val_loss=1.481183 val_acc=0.464200

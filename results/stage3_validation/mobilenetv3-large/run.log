@@ -1,0 +1,6 @@
+2026-09-09 15:26:37,731 | INFO | Running mobilenetv3-large | batch_size=128
+2026-09-09 15:27:06,641 | INFO | epoch=1 train_loss=1.706306 train_acc=0.365200 val_loss=2.324060 val_acc=0.094200
+2026-09-09 15:27:32,870 | INFO | epoch=2 train_loss=1.397164 train_acc=0.495044 val_loss=1.405523 val_acc=0.501400
+2026-09-09 15:27:59,245 | INFO | epoch=3 train_loss=1.284026 train_acc=0.541844 val_loss=1.301555 val_acc=0.559200
+2026-09-09 16:46:35,195 | INFO | Running mobilenetv3-large | batch_size=128
+2026-09-09 16:48:49,567 | INFO | epoch=1 train_loss=1.688134 train_acc=0.372756 val_loss=2.311712 val_acc=0.094200

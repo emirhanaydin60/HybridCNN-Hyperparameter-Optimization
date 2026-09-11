@@ -1,0 +1,29 @@
+2026-09-09 18:31:30,727 | INFO | Starting experiment: dataset=CIFAR10 model=shufflenetv2-1.5x hybrid=False lr=0.0012351628680148583 batch_size=32 seed=42
+2026-09-09 18:31:31,909 | INFO | Model built: total_params=2488874 trainable_params=2488874
+2026-09-09 18:32:18,817 | INFO | epoch=1 train_loss=1.691551 train_acc=0.386556 val_loss=1.540493 val_acc=0.453000
+2026-09-09 18:33:05,141 | INFO | epoch=2 train_loss=1.339744 train_acc=0.524200 val_loss=1.275406 val_acc=0.540000
+2026-09-09 18:33:51,413 | INFO | epoch=3 train_loss=1.181174 train_acc=0.586800 val_loss=1.101649 val_acc=0.603000
+2026-09-09 18:34:37,734 | INFO | epoch=4 train_loss=1.080807 train_acc=0.624533 val_loss=1.070703 val_acc=0.625000
+2026-09-09 18:35:24,149 | INFO | epoch=5 train_loss=1.069357 train_acc=0.626644 val_loss=1.004208 val_acc=0.649600
+2026-09-09 18:36:10,574 | INFO | epoch=6 train_loss=0.943924 train_acc=0.670489 val_loss=0.944138 val_acc=0.661600
+2026-09-09 18:36:56,961 | INFO | epoch=7 train_loss=0.870415 train_acc=0.698067 val_loss=1.067675 val_acc=0.670200
+2026-09-09 18:37:43,209 | INFO | epoch=8 train_loss=0.788979 train_acc=0.726556 val_loss=0.983305 val_acc=0.694200
+2026-09-09 18:38:29,589 | INFO | epoch=9 train_loss=0.744149 train_acc=0.743489 val_loss=2.097842 val_acc=0.705800
+2026-09-09 18:39:15,908 | INFO | epoch=10 train_loss=0.683552 train_acc=0.762200 val_loss=2.025487 val_acc=0.711800
+2026-09-09 18:40:02,251 | INFO | epoch=11 train_loss=0.611574 train_acc=0.787333 val_loss=4.472762 val_acc=0.699000
+2026-09-09 18:40:48,568 | INFO | epoch=12 train_loss=0.617425 train_acc=0.785778 val_loss=0.857129 val_acc=0.702800
+2026-09-09 18:41:35,227 | INFO | epoch=13 train_loss=0.543724 train_acc=0.810111 val_loss=4.913179 val_acc=0.704600
+2026-09-09 18:42:21,240 | INFO | epoch=14 train_loss=0.489846 train_acc=0.830556 val_loss=17.724290 val_acc=0.715400
+2026-09-09 18:43:07,335 | INFO | epoch=15 train_loss=0.453312 train_acc=0.841978 val_loss=6.865722 val_acc=0.697600
+2026-09-09 18:43:53,385 | INFO | epoch=16 train_loss=0.409261 train_acc=0.856556 val_loss=8.711876 val_acc=0.704000
+2026-09-09 18:44:39,464 | INFO | epoch=17 train_loss=0.436748 train_acc=0.847800 val_loss=4.946274 val_acc=0.708400
+2026-09-09 18:45:25,521 | INFO | epoch=18 train_loss=0.349232 train_acc=0.876533 val_loss=44.848499 val_acc=0.696600
+2026-09-09 18:46:12,335 | INFO | epoch=19 train_loss=0.332184 train_acc=0.881933 val_loss=5.844709 val_acc=0.707200
+2026-09-09 18:47:00,203 | INFO | epoch=20 train_loss=0.198019 train_acc=0.931178 val_loss=9.421838 val_acc=0.713800
+2026-09-09 18:47:46,944 | INFO | epoch=21 train_loss=0.142516 train_acc=0.951533 val_loss=33.514493 val_acc=0.707000
+2026-09-09 18:48:33,268 | INFO | epoch=22 train_loss=0.142550 train_acc=0.951222 val_loss=31.700171 val_acc=0.707600
+2026-09-09 18:49:19,416 | INFO | epoch=23 train_loss=0.116207 train_acc=0.959756 val_loss=3.423912 val_acc=0.714200
+2026-09-09 18:50:06,190 | INFO | epoch=24 train_loss=0.105022 train_acc=0.963333 val_loss=17.424091 val_acc=0.713600
+2026-09-09 18:50:06,190 | INFO | early_stopping triggered at epoch=24
+2026-09-09 18:50:10,860 | INFO | Finished training: dataset=CIFAR10 model=shufflenetv2-1.5x best_epoch=14 best_val_acc=0.715400 training_time=1114.2s total_time=1114.3s
+2026-09-09 18:50:10,861 | INFO | Test results: accuracy=0.7086 precision_macro=0.0000 recall_macro=0.0000 f1_macro=0.0000

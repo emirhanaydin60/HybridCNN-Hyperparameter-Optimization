@@ -1,0 +1,9 @@
+2026-09-11 14:38:59,323 | INFO | Hybrid trial start: ISIC2019 HybridCNN_GWO_Run1
+2026-09-11 14:38:59,335 | INFO | Trying batch_size=16 for HybridCNN_GWO_Run1 on ISIC2019
+2026-09-11 14:38:59,336 | ERROR | Trial bs=16 failed: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "<string>", line 98, in run_hybrid_trials
+  File "C:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\scripts\run_final_experiments.py", line 197, in prepare_data_loaders_for_dataset
+    train_dir = os.path.join(data_dir, "train")
+  File "<frozen ntpath>", line 100, in join
+TypeError: expected str, bytes or os.PathLike object, not NoneType

@@ -8,10 +8,10 @@ from pathlib import Path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from config import load_config
-from utils import ensure_dir, set_global_seed, write_json, read_json
+from utils import ensure_dir, set_global_seed, write_json, read_json, setup_logging
 from data_loader import build_data_bundle
 from model_factory import create_model
-from experiment_runner import build_model
+from experiment_runner import build_model, train_model, summarize_confusion_matrix
 from metrics import evaluate_model, build_confusion_matrix
 
 # Configuration for final experiments
@@ -123,6 +123,7 @@ def smoke_test_dataset_and_models(config):
             m_cpu = create_model(model_name, num_classes=10, device="cpu")
             # dummy forward for CIFAR10 shape
             import torch
+
             x = torch.randn(2, 3, 32, 32)
             y = m_cpu(x)
             out_shape = list(y.shape)
@@ -167,25 +168,365 @@ def write_master_files(master_rows, master_json):
     write_json(master_json, {"rows": master_rows})
 
 
+def prepare_data_loaders_for_dataset(dataset, data_dir, batch_size, seed, num_workers):
+    """Return train_loader, val_loader, test_loader, in_channels, img_size, num_classes
+    For CIFAR10 uses build_data_bundle; for ISIC2019 and BrainTumor uses ImageFolder conventions."""
+    import torch
+    from torch.utils.data import random_split, DataLoader
+    from torchvision.datasets import ImageFolder
+    from torchvision import transforms
+
+    if dataset.lower() == "cifar10":
+        bundle = build_data_bundle(
+            dataset=dataset,
+            data_dir=data_dir or "data",
+            batch_size=batch_size,
+            train_size=45000,
+            val_size=5000,
+            seed=seed,
+            num_workers=num_workers,
+        )
+        return bundle.train_loader, bundle.val_loader, bundle.test_loader, bundle.in_channels, bundle.img_size, bundle.num_classes
+
+    # Common transforms for ImageFolder datasets
+    normalize = transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+    transform = transforms.Compose([transforms.Resize(256), transforms.CenterCrop(224), transforms.ToTensor(), normalize])
+
+    if dataset.lower() == "isic2019":
+        # Prefer train/val/test dirs
+        train_dir = os.path.join(data_dir, "train")
+        val_dir = os.path.join(data_dir, "val")
+        test_dir = os.path.join(data_dir, "test")
+        if os.path.isdir(train_dir) and os.path.isdir(val_dir) and os.path.isdir(test_dir):
+            train_ds = ImageFolder(train_dir, transform=transform)
+            val_ds = ImageFolder(val_dir, transform=transform)
+            test_ds = ImageFolder(test_dir, transform=transform)
+        elif os.path.isdir(train_dir) and os.path.isdir(test_dir):
+            train_ds = ImageFolder(train_dir, transform=transform)
+            # split a small val from train (10%)
+            total = len(train_ds)
+            val_n = max(1, int(total * 0.1))
+            train_n = total - val_n
+            g = torch.Generator().manual_seed(seed)
+            train_ds, val_ds = random_split(train_ds, [train_n, val_n], generator=g)
+            test_ds = ImageFolder(test_dir, transform=transform)
+        else:
+            # fallback: single folder with classes
+            ds = ImageFolder(data_dir, transform=transform)
+            total = len(ds)
+            # create train/val/test split 80/10/10
+            n_train = int(total * 0.8)
+            n_val = int(total * 0.1)
+            n_test = total - n_train - n_val
+            g = torch.Generator().manual_seed(seed)
+            train_ds, val_ds, test_ds = random_split(ds, [n_train, n_val, n_test], generator=g)
+
+        def make_loader(ds, shuffle):
+            return DataLoader(ds, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
+
+        in_channels = 3
+        img_size = 224
+        # num_classes: if ImageFolder use classes, else infer from dataset
+        num_classes = None
+        try:
+            if isinstance(train_ds, ImageFolder):
+                num_classes = len(train_ds.classes)
+            else:
+                # random_split returns Subset
+                num_classes = len(train_ds.dataset.classes)
+        except Exception:
+            num_classes = 0
+
+        return make_loader(train_ds, True), make_loader(val_ds, False), make_loader(test_ds, False), in_channels, img_size, num_classes
+
+    if dataset.lower() in ("braintumor", "brain-tumor", "brain_tumor"):
+        train_root = os.path.join(data_dir, "TRAIN")
+        test_root = os.path.join(data_dir, "TEST")
+        if not os.path.isdir(train_root) or not os.path.isdir(test_root):
+            raise ValueError("BrainTumor dataset must contain TRAIN and TEST directories")
+        train_ds = ImageFolder(train_root, transform=transform)
+        val_ds = ImageFolder(test_root, transform=transform)
+        # No separate test set
+        test_ds = None
+
+        def make_loader(ds, shuffle):
+            return DataLoader(ds, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
+
+        in_channels = 3
+        img_size = 224
+        num_classes = len(train_ds.classes)
+        return make_loader(train_ds, True), make_loader(val_ds, False), None, in_channels, img_size, num_classes
+
+
+def run_single_experiment(dataset, model_name, config, epochs, baseline_lr, baseline_batch, start_flag=False):
+    """Run one dataset x model experiment. If start_flag is False, perform smoke actions only (dummy forward, parameter count)."""
+    seed = config.random_seed
+    set_global_seed(seed)
+
+    run_dir = os.path.join(RESULTS_ROOT, dataset, model_name)
+    ensure_dir(run_dir)
+    run_log = os.path.join(run_dir, "run.log")
+    logger = setup_logging(run_log)
+
+    # Determine hyperparams and create model
+    is_hybrid = model_name.lower().startswith("hybridcnn")
+
+    # For HybridCNN use build_model with hyperparameters from summary
+    if is_hybrid:
+        # map names to summary paths
+        mapping = {
+            "hybridcnn_gwo_run1": "results/CIFAR10/GWO/run_01/summary.json",
+            "hybridcnn_gwo_run3": "results/CIFAR10/GWO/run_03/summary.json",
+            "hybridcnn_woa_run3": "results/CIFAR10/WOA/run_03/summary.json",
+        }
+        summary_path = mapping.get(model_name.lower())
+        if not summary_path or not os.path.exists(summary_path):
+            return {"status": "FAILED", "reason": "missing hybrid summary"}
+        summary = read_json(summary_path)
+        best_hp = summary.get("best_hyperparameters", {})
+        model_config = best_hp
+        lr = best_hp.get("learning_rate", config.learning_rate)
+        batch_size = best_hp.get("batch_size", config.batch_size)
+    else:
+        # baseline
+        model_config = {"model_name": model_name}
+        lr = baseline_lr
+        batch_size = baseline_batch
+
+    logger.info(
+        "Starting experiment: dataset=%s model=%s hybrid=%s lr=%s batch_size=%s seed=%s",
+        dataset,
+        model_name,
+        is_hybrid,
+        lr,
+        batch_size,
+        seed,
+    )
+
+    # Prepare data loaders
+    data_dir = DATASETS.get(dataset)
+
+    # For hybrid models we may need to retry with smaller batch sizes on OOM
+    tried_batch = None
+    if is_hybrid:
+        # batch candidate list: prefer best found batch_size, then common fallbacks
+        hp_bs = batch_size
+        candidates = []
+        if isinstance(hp_bs, int) and hp_bs > 0:
+            candidates.append(hp_bs)
+        for b in (16, 12, 8):
+            if b not in candidates:
+                candidates.append(b)
+    else:
+        candidates = [batch_size]
+
+    # Try training with candidate batch sizes; if OOM occurs during loader build or training, retry with smaller bs
+    last_exception = None
+    successful = False
+    for bs_try in candidates:
+        tried_batch = bs_try
+        try:
+            train_loader, val_loader, test_loader, in_channels, img_size, num_classes = prepare_data_loaders_for_dataset(dataset, data_dir, bs_try, seed, config.num_workers)
+
+            # Build model for this attempt
+            if is_hybrid:
+                model = build_model(model_config, in_channels, img_size, num_classes)
+            else:
+                model = create_model(model_name, num_classes=num_classes, device="cpu")
+
+            # Parameter counts
+            total = sum(p.numel() for p in model.parameters())
+            trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
+            logger.info("Attempt bs=%s: Model built: total_params=%d trainable_params=%d", bs_try, int(total), int(trainable))
+
+            # If not start_flag, do smoke: dummy forward and return
+            if not start_flag:
+                write_json(os.path.join(run_dir, "result.json"), {"status": "SKIPPED_SMOKE"})
+                return {"status": "SKIPPED_SMOKE"}
+
+            # TRAINING
+            try:
+                device = "cuda" if __import__("torch").cuda.is_available() else "cpu"
+                model = model.to(device)
+                start_time = time.perf_counter()
+                model, history, best_val_acc, best_epoch, train_time = train_model(
+                    model,
+                    train_loader,
+                    val_loader,
+                    device,
+                    learning_rate=lr,
+                    epochs=epochs,
+                    patience=config.patience,
+                    logger=logger,
+                    checkpoint_path=os.path.join(run_dir, "best_model.pth"),
+                )
+                total_time = time.perf_counter() - start_time
+                successful = True
+                batch_size = bs_try
+                break
+            except Exception as e:
+                last_exception = e
+                msg = str(e).lower()
+                logger.exception("Training attempt bs=%s failed: %s", bs_try, e)
+                if "out of memory" in msg or "cuda out of memory" in msg:
+                    try:
+                        import torch
+
+                        torch.cuda.empty_cache()
+                    except Exception:
+                        pass
+                    logger.info("OOM at bs=%s, will try smaller batch", bs_try)
+                    continue
+                else:
+                    write_json(os.path.join(run_dir, "result.json"), {"status": "FAILED", "exception": str(e)})
+                    return {"status": "FAILED", "exception": str(e)}
+
+        except Exception as e:
+            last_exception = e
+            msg = str(e).lower()
+            logger.exception("Preparation attempt bs=%s failed: %s", bs_try, e)
+            if "out of memory" in msg or "cuda out of memory" in msg:
+                try:
+                    import torch
+
+                    torch.cuda.empty_cache()
+                except Exception:
+                    pass
+                logger.info("OOM while preparing loaders at bs=%s, will try smaller batch", bs_try)
+                continue
+            else:
+                write_json(os.path.join(run_dir, "result.json"), {"status": "FAILED", "exception": str(e)})
+                return {"status": "FAILED", "exception": str(e)}
+
+    if not successful:
+        msg = str(last_exception) if last_exception else "training failed for unknown reasons"
+        logger.exception("All attempts failed for %s/%s: %s", dataset, model_name, msg)
+        write_json(os.path.join(run_dir, "result.json"), {"status": "FAILED", "exception": msg})
+        return {"status": "FAILED", "exception": msg}
+
+    # Evaluation
+    if test_loader is not None:
+        test_metrics = evaluate_model(model, test_loader, device)
+        confusion = build_confusion_matrix(test_metrics["targets"], test_metrics["predictions"], num_classes)
+        summary_scores = summarize_confusion_matrix(confusion)
+    else:
+        test_metrics = None
+        confusion = None
+        summary_scores = {}
+
+    # Log training summary
+    logger.info(
+        "Finished training: dataset=%s model=%s best_epoch=%s best_val_acc=%.6f training_time=%.1fs total_time=%.1fs",
+        dataset,
+        model_name,
+        best_epoch,
+        best_val_acc,
+        train_time,
+        total_time,
+    )
+
+    if test_metrics is not None:
+        try:
+            logger.info(
+                "Test results: accuracy=%.4f precision_macro=%.4f recall_macro=%.4f f1_macro=%.4f",
+                test_metrics.get("accuracy", 0.0),
+                test_metrics.get("precision_macro", 0.0),
+                test_metrics.get("recall_macro", 0.0),
+                test_metrics.get("f1_macro", 0.0),
+            )
+        except Exception:
+            pass
+
+    result = {
+        "model": model_name,
+        "dataset": dataset,
+        "seed": seed,
+        "parameter_count": {"total": int(total), "trainable": int(trainable)},
+        "history": history,
+        "best_val_accuracy": best_val_acc,
+        "best_epoch": best_epoch,
+        "test_metrics": test_metrics,
+        "summary_scores": summary_scores,
+        "training_time_seconds": train_time,
+        "total_time_seconds": total_time,
+        "best_model_path": os.path.join(run_dir, "best_model.pth"),
+        "status": "SUCCESS",
+    }
+    write_json(os.path.join(run_dir, "result.json"), result)
+    if confusion is not None:
+        write_json(os.path.join(run_dir, "confusion_matrix.json"), {"matrix": confusion.tolist()})
+    write_json(os.path.join(run_dir, "training_history.json"), history)
+    return {"status": "SUCCESS"}
+
+
 def main():
+    # Run full experiments by default when executed (no CLI arguments required).
     config = load_config(None)
     ensure_dir(RESULTS_ROOT)
-
-    print("Running smoke tests (no heavy training)...")
-    smoke = smoke_test_dataset_and_models(config)
-    timestamp = time.strftime("%Y%m%d-%H%M%S")
-    smoke_path = os.path.join(RESULTS_ROOT, f"smoke_{timestamp}.json")
-    write_json(smoke_path, smoke)
-    print("Smoke test written:", smoke_path)
 
     # Import existing CIFAR hybrids into master structure
     imported = import_existing_cifar_hybrid_results(RESULTS_ROOT)
     print("Imported existing CIFAR HybridCNN results:", imported)
 
-    # Build minimal master rows for smoke summary (mark SKIPPED)
+    # baseline lr/batch from HybridCNN_GWO_Run1
+    gwo1_path = os.path.join("results", "CIFAR10", "GWO", "run_01", "summary.json")
+    baseline_lr = config.learning_rate
+    baseline_batch = config.batch_size
+    if os.path.exists(gwo1_path):
+        try:
+            s = read_json(gwo1_path)
+            bh = s.get("best_hyperparameters", {})
+            baseline_lr = bh.get("learning_rate", baseline_lr)
+            baseline_batch = bh.get("batch_size", baseline_batch)
+        except Exception:
+            pass
+
+    # Build master rows and run experiments (start=True)
     master_rows = []
+    total_start = time.perf_counter()
+    epochs = getattr(config, "final_epochs", 50)
     for dataset in ["CIFAR10", "ISIC2019", "BrainTumor"]:
         for model in MODELS:
+            # Resume logic: skip if result.json and best_model.pth exist
+            run_dir = os.path.join(RESULTS_ROOT, dataset, model)
+            ensure_dir(run_dir)
+            result_json_path = os.path.join(run_dir, "result.json")
+            best_model_path = os.path.join(run_dir, "best_model.pth")
+
+            # If this is CIFAR10 and a HybridCNN, prefer importing existing summary and skip training
+            if dataset == "CIFAR10" and model.lower().startswith("hybridcnn"):
+                # try to import existing CIFAR hybrid summary
+                mapping = {
+                    "hybridcnn_gwo_run1": os.path.join("results", "CIFAR10", "GWO", "run_01", "summary.json"),
+                    "hybridcnn_gwo_run3": os.path.join("results", "CIFAR10", "GWO", "run_03", "summary.json"),
+                    "hybridcnn_woa_run3": os.path.join("results", "CIFAR10", "WOA", "run_03", "summary.json"),
+                }
+                summary_src = mapping.get(model.lower())
+                if summary_src and os.path.exists(summary_src):
+                    try:
+                        data = read_json(summary_src)
+                        write_json(result_json_path, data)
+                        status = "IMPORTED"
+                        print(f"Imported existing hybrid summary for {dataset}/{model}")
+                    except Exception:
+                        status = "FAILED"
+                else:
+                    # No existing summary to import; fall back to normal behavior
+                    if os.path.exists(result_json_path) and os.path.exists(best_model_path):
+                        status = "SKIPPED_ALREADY"
+                        print(f"Skipping existing: {dataset}/{model}")
+                    else:
+                        info = run_single_experiment(dataset, model, config, epochs, baseline_lr, baseline_batch, start_flag=True)
+                        status = info.get("status", "FAILED")
+            else:
+                if os.path.exists(result_json_path) and os.path.exists(best_model_path):
+                    status = "SKIPPED_ALREADY"
+                    print(f"Skipping existing: {dataset}/{model}")
+                else:
+                    info = run_single_experiment(dataset, model, config, epochs, baseline_lr, baseline_batch, start_flag=True)
+                    status = info.get("status", "FAILED")
+
+            # minimal row for master
             row = {
                 "dataset": dataset,
                 "model": model,
@@ -204,44 +545,44 @@ def main():
                 "validation_f1_macro": None,
                 "training_time_seconds": None,
                 "total_wall_time_seconds": None,
-                "best_model_path": None,
-                "status": "SKIPPED",
+                "best_model_path": best_model_path if os.path.exists(best_model_path) else None,
+                "status": status,
             }
-            # If CIFAR hybrids present and dataset CIFAR10 and model is hybrid, try to import
-            if dataset == "CIFAR10" and model.startswith("HybridCNN"):
-                # look for existing result.json in results/CIFAR10/*
-                existing_paths = [
-                    os.path.join("results", "CIFAR10", "GWO", "run_01", "summary.json"),
-                    os.path.join("results", "CIFAR10", "GWO", "run_03", "summary.json"),
-                    os.path.join("results", "CIFAR10", "WOA", "run_03", "summary.json"),
-                ]
-                for p in existing_paths:
-                    if os.path.exists(p):
-                        try:
-                            data = read_json(p)
-                            # map to basic fields
-                            row["best_val_accuracy"] = data.get("best_hyperparameters", {}).get("best_val_accuracy") or data.get("best_val_accuracy")
-                            row["best_epoch"] = data.get("best_epoch")
-                            row["status"] = "IMPORTED"
-                        except Exception:
-                            pass
+            # if result.json exists, fill fields
+            if os.path.exists(result_json_path):
+                try:
+                    r = read_json(result_json_path)
+                    row["best_epoch"] = r.get("best_epoch")
+                    row["best_val_accuracy"] = r.get("best_val_accuracy")
+                    tm = r.get("test_metrics")
+                    if tm:
+                        row["test_accuracy"] = tm.get("accuracy")
+                    pc = r.get("parameter_count")
+                    if pc:
+                        row["total_parameters"] = pc.get("total")
+                        row["trainable_parameters"] = pc.get("trainable")
+                    row["training_time_seconds"] = r.get("training_time_seconds")
+                except Exception:
+                    pass
+
             master_rows.append(row)
 
+    total_time = time.perf_counter() - total_start
     write_master_files(master_rows, MASTER_JSON)
     final_summary = {
         "total_experiments": len(master_rows),
-        "successful_experiments": 0,
-        "failed_experiments": 0,
-        "skipped_experiments": len(master_rows),
-        "total_runtime": 0,
+        "successful_experiments": sum(1 for r in master_rows if r["status"] == "SUCCESS"),
+        "failed_experiments": sum(1 for r in master_rows if r["status"] == "FAILED"),
+        "skipped_experiments": sum(1 for r in master_rows if r["status"].startswith("SKIPPED")),
+        "total_runtime": total_time,
         "dataset_status": {k: (v is not None) for k, v in DATASETS.items()},
         "model_status": {m: True for m in MODELS},
         "master_results_csv": MASTER_CSV,
         "master_results_json": MASTER_JSON,
     }
     write_json(FINAL_SUMMARY, final_summary)
-    print("Smoke run complete. Master files:", MASTER_CSV, MASTER_JSON)
+    print("Orchestration complete. Master files:", MASTER_CSV, MASTER_JSON)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

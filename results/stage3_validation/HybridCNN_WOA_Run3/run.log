@@ -1,0 +1,4 @@
+2026-09-09 13:43:51,597 | INFO | Running HybridCNN_WOA_Run3 | batch_size=32
+2026-09-09 13:47:44,667 | INFO | epoch=1 train_loss=1.563341 train_acc=0.414378 val_loss=1.308016 val_acc=0.524400
+2026-09-09 15:16:09,236 | INFO | Running HybridCNN_WOA_Run3 | batch_size=32
+2026-09-09 16:37:03,637 | INFO | epoch=1 train_loss=1.545330 train_acc=0.421489 val_loss=1.295122 val_acc=0.535600

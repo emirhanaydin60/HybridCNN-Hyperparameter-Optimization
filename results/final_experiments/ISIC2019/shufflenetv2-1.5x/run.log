@@ -1,0 +1,23 @@
+2026-09-10 07:07:50,256 | INFO | Starting experiment: dataset=ISIC2019 model=shufflenetv2-1.5x hybrid=False lr=0.0012351628680148583 batch_size=32 seed=42
+2026-09-10 07:07:50,371 | INFO | Model built: total_params=2486824 trainable_params=2486824
+2026-09-10 07:19:00,214 | INFO | epoch=1 train_loss=1.233931 train_acc=0.549233 val_loss=1.125539 val_acc=0.592812
+2026-09-10 07:30:00,811 | INFO | epoch=2 train_loss=1.115412 train_acc=0.595082 val_loss=1.106456 val_acc=0.612559
+2026-09-10 07:41:07,567 | INFO | epoch=3 train_loss=1.069375 train_acc=0.612001 val_loss=1.095982 val_acc=0.612164
+2026-09-10 07:52:13,676 | INFO | epoch=4 train_loss=1.018095 train_acc=0.632867 val_loss=1.009166 val_acc=0.637046
+2026-09-10 08:03:26,575 | INFO | epoch=5 train_loss=0.972494 train_acc=0.646233 val_loss=1.012084 val_acc=0.626382
+2026-09-10 08:14:38,399 | INFO | epoch=6 train_loss=0.934276 train_acc=0.661121 val_loss=0.945676 val_acc=0.650079
+2026-09-10 08:25:50,464 | INFO | epoch=7 train_loss=0.896738 train_acc=0.671498 val_loss=0.954112 val_acc=0.638626
+2026-09-10 08:37:01,550 | INFO | epoch=8 train_loss=0.846075 train_acc=0.690503 val_loss=0.946305 val_acc=0.659163
+2026-09-10 08:48:13,930 | INFO | epoch=9 train_loss=0.797274 train_acc=0.711144 val_loss=0.957419 val_acc=0.644550
+2026-09-10 08:59:26,380 | INFO | epoch=10 train_loss=0.733245 train_acc=0.735394 val_loss=0.994543 val_acc=0.629937
+2026-09-10 09:10:38,923 | INFO | epoch=11 train_loss=0.661484 train_acc=0.757952 val_loss=1.078694 val_acc=0.628357
+2026-09-10 09:21:51,865 | INFO | epoch=12 train_loss=0.577452 train_acc=0.786939 val_loss=1.116965 val_acc=0.628357
+2026-09-10 09:33:03,762 | INFO | epoch=13 train_loss=0.487315 train_acc=0.822750 val_loss=1.211464 val_acc=0.626777
+2026-09-10 09:44:15,858 | INFO | epoch=14 train_loss=0.217053 train_acc=0.924318 val_loss=1.559683 val_acc=0.619273
+2026-09-10 09:55:28,408 | INFO | epoch=15 train_loss=0.112492 train_acc=0.963230 val_loss=1.699348 val_acc=0.630727
+2026-09-10 10:06:40,638 | INFO | epoch=16 train_loss=0.112418 train_acc=0.960862 val_loss=1.895863 val_acc=0.627567
+2026-09-10 10:17:53,906 | INFO | epoch=17 train_loss=0.087725 train_acc=0.969434 val_loss=1.972088 val_acc=0.635466
+2026-09-10 10:29:06,911 | INFO | epoch=18 train_loss=0.076630 train_acc=0.974509 val_loss=2.109961 val_acc=0.631517
+2026-09-10 10:29:06,911 | INFO | early_stopping triggered at epoch=18
+2026-09-10 10:30:03,812 | INFO | Finished training: dataset=ISIC2019 model=shufflenetv2-1.5x best_epoch=8 best_val_acc=0.659163 training_time=12076.5s total_time=12076.5s
+2026-09-10 10:30:03,813 | INFO | Test results: accuracy=0.6570 precision_macro=0.0000 recall_macro=0.0000 f1_macro=0.0000

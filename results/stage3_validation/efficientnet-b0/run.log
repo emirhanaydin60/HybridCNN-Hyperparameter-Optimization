@@ -1,0 +1,6 @@
+2026-09-09 15:25:01,174 | INFO | Running efficientnet-b0 | batch_size=128
+2026-09-09 15:25:33,015 | INFO | epoch=1 train_loss=1.879093 train_acc=0.310422 val_loss=1.584777 val_acc=0.429600
+2026-09-09 15:26:03,208 | INFO | epoch=2 train_loss=1.498777 train_acc=0.457311 val_loss=1.392499 val_acc=0.496800
+2026-09-09 15:26:33,668 | INFO | epoch=3 train_loss=1.315639 train_acc=0.528956 val_loss=1.236364 val_acc=0.557400
+2026-09-09 16:42:57,069 | INFO | Running efficientnet-b0 | batch_size=128
+2026-09-09 16:46:20,581 | INFO | epoch=1 train_loss=1.892273 train_acc=0.299778 val_loss=1.572300 val_acc=0.427000

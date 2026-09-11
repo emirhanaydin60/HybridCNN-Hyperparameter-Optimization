@@ -1,0 +1,49 @@
+2026-09-10 10:32:40,090 | INFO | Starting experiment: dataset=BrainTumor model=efficientnet-b0 hybrid=False lr=0.0012351628680148583 batch_size=32 seed=42
+2026-09-10 10:32:40,174 | INFO | Model built: total_params=4012672 trainable_params=4012672
+2026-09-10 10:39:05,097 | INFO | epoch=1 train_loss=0.790719 train_acc=0.685893 val_loss=1.464682 val_acc=0.560000
+2026-09-10 10:44:56,342 | INFO | epoch=2 train_loss=0.499358 train_acc=0.816786 val_loss=0.766622 val_acc=0.759375
+2026-09-10 10:50:46,308 | INFO | epoch=3 train_loss=0.355430 train_acc=0.871786 val_loss=0.914507 val_acc=0.769375
+2026-09-10 10:56:33,401 | INFO | epoch=4 train_loss=0.282517 train_acc=0.899286 val_loss=0.705621 val_acc=0.833750
+2026-09-10 11:02:20,385 | INFO | epoch=5 train_loss=0.217603 train_acc=0.921071 val_loss=0.607339 val_acc=0.852500
+2026-09-10 11:08:07,673 | INFO | epoch=6 train_loss=0.189522 train_acc=0.934286 val_loss=0.904488 val_acc=0.794375
+2026-09-10 11:13:54,908 | INFO | epoch=7 train_loss=0.170074 train_acc=0.941071 val_loss=0.484807 val_acc=0.894375
+2026-09-10 11:19:42,992 | INFO | epoch=8 train_loss=0.124242 train_acc=0.956607 val_loss=0.958756 val_acc=0.748125
+2026-09-10 11:25:30,987 | INFO | epoch=9 train_loss=0.109591 train_acc=0.959464 val_loss=0.707825 val_acc=0.828125
+2026-09-10 11:31:18,760 | INFO | epoch=10 train_loss=0.117301 train_acc=0.961071 val_loss=0.700733 val_acc=0.891250
+2026-09-10 11:37:06,462 | INFO | epoch=11 train_loss=0.073292 train_acc=0.974821 val_loss=0.786198 val_acc=0.841250
+2026-09-10 11:42:54,543 | INFO | epoch=12 train_loss=0.076756 train_acc=0.974821 val_loss=0.627501 val_acc=0.913125
+2026-09-10 11:48:45,299 | INFO | epoch=13 train_loss=0.054447 train_acc=0.983750 val_loss=0.775831 val_acc=0.895000
+2026-09-10 11:54:35,774 | INFO | epoch=14 train_loss=0.065691 train_acc=0.979286 val_loss=0.707591 val_acc=0.915625
+2026-09-10 12:00:23,165 | INFO | epoch=15 train_loss=0.058302 train_acc=0.980357 val_loss=0.669573 val_acc=0.897500
+2026-09-10 12:06:10,115 | INFO | epoch=16 train_loss=0.063419 train_acc=0.978929 val_loss=0.734660 val_acc=0.906875
+2026-09-10 12:11:57,167 | INFO | epoch=17 train_loss=0.061713 train_acc=0.979643 val_loss=0.877466 val_acc=0.858750
+2026-09-10 12:17:44,115 | INFO | epoch=18 train_loss=0.045841 train_acc=0.986607 val_loss=0.848966 val_acc=0.831875
+2026-09-10 12:23:31,025 | INFO | epoch=19 train_loss=0.044213 train_acc=0.983929 val_loss=1.086467 val_acc=0.793125
+2026-09-10 12:29:18,044 | INFO | epoch=20 train_loss=0.020817 train_acc=0.993929 val_loss=0.784436 val_acc=0.921250
+2026-09-10 12:35:03,148 | INFO | epoch=21 train_loss=0.011832 train_acc=0.996786 val_loss=0.748282 val_acc=0.920000
+2026-09-10 12:40:48,176 | INFO | epoch=22 train_loss=0.004002 train_acc=0.999107 val_loss=0.820455 val_acc=0.922500
+2026-09-10 12:46:35,718 | INFO | epoch=23 train_loss=0.008977 train_acc=0.997143 val_loss=0.770408 val_acc=0.920000
+2026-09-10 12:52:23,136 | INFO | epoch=24 train_loss=0.011952 train_acc=0.996607 val_loss=0.830851 val_acc=0.918750
+2026-09-10 12:58:10,524 | INFO | epoch=25 train_loss=0.006387 train_acc=0.998393 val_loss=0.781945 val_acc=0.924375
+2026-09-10 13:03:58,480 | INFO | epoch=26 train_loss=0.005486 train_acc=0.997857 val_loss=0.943041 val_acc=0.903125
+2026-09-10 13:09:46,296 | INFO | epoch=27 train_loss=0.009077 train_acc=0.997321 val_loss=0.852985 val_acc=0.920000
+2026-09-10 13:15:33,958 | INFO | epoch=28 train_loss=0.004636 train_acc=0.998571 val_loss=0.891296 val_acc=0.920000
+2026-09-10 13:21:21,759 | INFO | epoch=29 train_loss=0.028995 train_acc=0.991429 val_loss=0.878313 val_acc=0.900000
+2026-09-10 13:27:09,821 | INFO | epoch=30 train_loss=0.016823 train_acc=0.994286 val_loss=0.802280 val_acc=0.921875
+2026-09-10 13:32:57,433 | INFO | epoch=31 train_loss=0.005098 train_acc=0.998750 val_loss=0.836603 val_acc=0.920000
+2026-09-10 13:38:45,287 | INFO | epoch=32 train_loss=0.004183 train_acc=0.998750 val_loss=0.778092 val_acc=0.918750
+2026-09-10 13:44:33,353 | INFO | epoch=33 train_loss=0.008897 train_acc=0.997500 val_loss=0.877067 val_acc=0.907500
+2026-09-10 13:50:21,513 | INFO | epoch=34 train_loss=0.005059 train_acc=0.998393 val_loss=0.837943 val_acc=0.925625
+2026-09-10 13:56:03,638 | INFO | epoch=35 train_loss=0.002996 train_acc=0.999286 val_loss=0.836774 val_acc=0.926875
+2026-09-10 14:01:49,129 | INFO | epoch=36 train_loss=0.001172 train_acc=0.999821 val_loss=0.863698 val_acc=0.920625
+2026-09-10 14:07:34,302 | INFO | epoch=37 train_loss=0.002910 train_acc=0.999107 val_loss=0.842300 val_acc=0.916875
+2026-09-10 14:13:20,014 | INFO | epoch=38 train_loss=0.002247 train_acc=0.999643 val_loss=0.905767 val_acc=0.921250
+2026-09-10 14:19:05,563 | INFO | epoch=39 train_loss=0.003214 train_acc=0.998750 val_loss=0.982933 val_acc=0.918125
+2026-09-10 14:24:51,302 | INFO | epoch=40 train_loss=0.006295 train_acc=0.997857 val_loss=1.034745 val_acc=0.911250
+2026-09-10 14:30:36,993 | INFO | epoch=41 train_loss=0.007249 train_acc=0.998214 val_loss=1.055238 val_acc=0.921875
+2026-09-10 14:36:22,344 | INFO | epoch=42 train_loss=0.000953 train_acc=1.000000 val_loss=0.982375 val_acc=0.923125
+2026-09-10 14:42:07,932 | INFO | epoch=43 train_loss=0.000958 train_acc=0.999643 val_loss=0.964237 val_acc=0.925000
+2026-09-10 14:47:54,961 | INFO | epoch=44 train_loss=0.001075 train_acc=0.999643 val_loss=1.024336 val_acc=0.924375
+2026-09-10 14:53:40,851 | INFO | epoch=45 train_loss=0.000328 train_acc=1.000000 val_loss=1.031797 val_acc=0.919375
+2026-09-10 14:53:40,851 | INFO | early_stopping triggered at epoch=45
+2026-09-10 14:53:40,865 | INFO | Finished training: dataset=BrainTumor model=efficientnet-b0 best_epoch=35 best_val_acc=0.926875 training_time=15659.4s total_time=15659.5s

@@ -1,0 +1,6 @@
+{
+  "status": "SUCCESS",
+  "best_val_accuracy": 0.7552,
+  "best_epoch": 2,
+  "training_time_seconds": 359.2054226999753
+}

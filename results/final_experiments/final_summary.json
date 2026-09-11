@@ -1,0 +1,22 @@
+{
+  "total_experiments": 18,
+  "successful_experiments": 9,
+  "failed_experiments": 6,
+  "skipped_experiments": 0,
+  "total_runtime": 93614.765605,
+  "dataset_status": {
+    "CIFAR10": false,
+    "ISIC2019": true,
+    "BrainTumor": true
+  },
+  "model_status": {
+    "HybridCNN_GWO_Run1": true,
+    "HybridCNN_GWO_Run3": true,
+    "HybridCNN_WOA_Run3": true,
+    "efficientnet-b0": true,
+    "mobilenetv3-large": true,
+    "shufflenetv2-1.5x": true
+  },
+  "master_results_csv": "results/final_experiments\\master_results.csv",
+  "master_results_json": "results/final_experiments\\master_results.json"
+}

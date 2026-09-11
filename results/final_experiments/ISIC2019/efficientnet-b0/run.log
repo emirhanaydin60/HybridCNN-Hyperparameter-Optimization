@@ -1,0 +1,29 @@
+2026-09-09 18:51:41,271 | INFO | Starting experiment: dataset=ISIC2019 model=efficientnet-b0 hybrid=False lr=0.0012351628680148583 batch_size=32 seed=42
+2026-09-09 18:51:41,416 | INFO | Model built: total_params=4017796 trainable_params=4017796
+2026-09-09 19:13:06,063 | INFO | epoch=1 train_loss=1.283866 train_acc=0.534288 val_loss=1.131580 val_acc=0.597551
+2026-09-09 19:31:56,488 | INFO | epoch=2 train_loss=1.155341 train_acc=0.578446 val_loss=1.102421 val_acc=0.609005
+2026-09-09 19:50:45,868 | INFO | epoch=3 train_loss=1.113859 train_acc=0.599538 val_loss=1.050498 val_acc=0.620853
+2026-09-09 20:09:36,327 | INFO | epoch=4 train_loss=1.069466 train_acc=0.617020 val_loss=1.040826 val_acc=0.621248
+2026-09-09 20:28:25,111 | INFO | epoch=5 train_loss=1.029928 train_acc=0.629540 val_loss=1.019812 val_acc=0.637046
+2026-09-09 20:47:17,627 | INFO | epoch=6 train_loss=0.989902 train_acc=0.643639 val_loss=1.001373 val_acc=0.643760
+2026-09-09 21:06:00,885 | INFO | epoch=7 train_loss=0.968913 train_acc=0.651196 val_loss=0.956269 val_acc=0.656003
+2026-09-09 21:24:48,460 | INFO | epoch=8 train_loss=0.934434 train_acc=0.663997 val_loss=0.962062 val_acc=0.659163
+2026-09-09 21:43:34,747 | INFO | epoch=9 train_loss=0.916750 train_acc=0.673528 val_loss=0.901514 val_acc=0.678120
+2026-09-09 22:02:21,865 | INFO | epoch=10 train_loss=0.877632 train_acc=0.682100 val_loss=0.907259 val_acc=0.664692
+2026-09-09 22:21:09,414 | INFO | epoch=11 train_loss=0.851688 train_acc=0.693718 val_loss=0.909327 val_acc=0.674566
+2026-09-09 22:39:57,547 | INFO | epoch=12 train_loss=0.830786 train_acc=0.701782 val_loss=0.889152 val_acc=0.684834
+2026-09-09 22:58:50,197 | INFO | epoch=13 train_loss=0.794025 train_acc=0.718137 val_loss=0.876990 val_acc=0.683649
+2026-09-09 23:17:42,067 | INFO | epoch=14 train_loss=0.754712 train_acc=0.732743 val_loss=0.891370 val_acc=0.690363
+2026-09-09 23:36:32,985 | INFO | epoch=15 train_loss=0.712927 train_acc=0.747462 val_loss=0.886544 val_acc=0.690363
+2026-09-09 23:55:24,504 | INFO | epoch=16 train_loss=0.667406 train_acc=0.759531 val_loss=0.895058 val_acc=0.690363
+2026-09-10 00:14:16,025 | INFO | epoch=17 train_loss=0.621277 train_acc=0.776224 val_loss=0.944997 val_acc=0.679305
+2026-09-10 00:33:07,845 | INFO | epoch=18 train_loss=0.588537 train_acc=0.791902 val_loss=0.965034 val_acc=0.687204
+2026-09-10 00:51:58,768 | INFO | epoch=19 train_loss=0.539321 train_acc=0.802730 val_loss=1.070315 val_acc=0.672196
+2026-09-10 01:10:49,864 | INFO | epoch=20 train_loss=0.376777 train_acc=0.865723 val_loss=1.105260 val_acc=0.671801
+2026-09-10 01:29:40,851 | INFO | epoch=21 train_loss=0.294411 train_acc=0.897135 val_loss=1.227013 val_acc=0.671406
+2026-09-10 01:48:31,723 | INFO | epoch=22 train_loss=0.259899 train_acc=0.909711 val_loss=1.300523 val_acc=0.664692
+2026-09-10 02:07:23,150 | INFO | epoch=23 train_loss=0.231580 train_acc=0.919468 val_loss=1.407401 val_acc=0.666667
+2026-09-10 02:26:13,804 | INFO | epoch=24 train_loss=0.195943 train_acc=0.930014 val_loss=1.494821 val_acc=0.666272
+2026-09-10 02:26:13,804 | INFO | early_stopping triggered at epoch=24
+2026-09-10 02:27:35,246 | INFO | Finished training: dataset=ISIC2019 model=efficientnet-b0 best_epoch=14 best_val_acc=0.690363 training_time=27213.2s total_time=27213.2s
+2026-09-10 02:27:35,246 | INFO | Test results: accuracy=0.6781 precision_macro=0.0000 recall_macro=0.0000 f1_macro=0.0000

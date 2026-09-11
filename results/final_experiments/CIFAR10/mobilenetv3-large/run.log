@@ -1,0 +1,53 @@
+2026-09-09 17:53:41,283 | INFO | Starting experiment: dataset=CIFAR10 model=mobilenetv3-large hybrid=False lr=0.0012351628680148583 batch_size=32 seed=42
+2026-09-09 17:53:42,539 | INFO | Model built: total_params=4214842 trainable_params=4214842
+2026-09-09 17:54:29,482 | INFO | epoch=1 train_loss=1.824605 train_acc=0.312578 val_loss=1.984689 val_acc=0.264600
+2026-09-09 17:55:16,376 | INFO | epoch=2 train_loss=1.759618 train_acc=0.341511 val_loss=3.549214 val_acc=0.300400
+2026-09-09 17:56:03,472 | INFO | epoch=3 train_loss=1.778127 train_acc=0.338400 val_loss=1.797502 val_acc=0.318600
+2026-09-09 17:56:50,453 | INFO | epoch=4 train_loss=1.741954 train_acc=0.353444 val_loss=1.739669 val_acc=0.350600
+2026-09-09 17:57:37,607 | INFO | epoch=5 train_loss=1.912514 train_acc=0.280067 val_loss=1.834509 val_acc=0.309400
+2026-09-09 17:58:25,051 | INFO | epoch=6 train_loss=1.889933 train_acc=0.295600 val_loss=1.859721 val_acc=0.301000
+2026-09-09 17:59:11,893 | INFO | epoch=7 train_loss=1.852142 train_acc=0.311867 val_loss=1.895092 val_acc=0.302600
+2026-09-09 17:59:58,759 | INFO | epoch=8 train_loss=1.906309 train_acc=0.287889 val_loss=1.847987 val_acc=0.296000
+2026-09-09 18:00:45,645 | INFO | epoch=9 train_loss=1.889884 train_acc=0.288111 val_loss=2.145069 val_acc=0.206600
+2026-09-09 18:01:32,626 | INFO | epoch=10 train_loss=1.889687 train_acc=0.289378 val_loss=1.719354 val_acc=0.349400
+2026-09-09 18:02:21,626 | INFO | epoch=11 train_loss=1.716309 train_acc=0.353289 val_loss=1.665279 val_acc=0.378000
+2026-09-09 18:03:10,884 | INFO | epoch=12 train_loss=1.745022 train_acc=0.352311 val_loss=1.611051 val_acc=0.393800
+2026-09-09 18:03:58,558 | INFO | epoch=13 train_loss=1.601500 train_acc=0.403978 val_loss=1.506130 val_acc=0.449600
+2026-09-09 18:04:45,663 | INFO | epoch=14 train_loss=1.603648 train_acc=0.413178 val_loss=1.700138 val_acc=0.387600
+2026-09-09 18:05:32,644 | INFO | epoch=15 train_loss=1.795866 train_acc=0.329778 val_loss=1.681962 val_acc=0.374000
+2026-09-09 18:06:19,651 | INFO | epoch=16 train_loss=1.654454 train_acc=0.391822 val_loss=1.582212 val_acc=0.410800
+2026-09-09 18:07:06,607 | INFO | epoch=17 train_loss=1.646729 train_acc=0.391533 val_loss=1.559024 val_acc=0.420400
+2026-09-09 18:07:53,725 | INFO | epoch=18 train_loss=1.598215 train_acc=0.410778 val_loss=1.601271 val_acc=0.413800
+2026-09-09 18:08:40,622 | INFO | epoch=19 train_loss=1.550465 train_acc=0.429244 val_loss=1.482233 val_acc=0.451600
+2026-09-09 18:09:27,688 | INFO | epoch=20 train_loss=1.522919 train_acc=0.436200 val_loss=1.469157 val_acc=0.462800
+2026-09-09 18:10:14,708 | INFO | epoch=21 train_loss=1.477785 train_acc=0.453533 val_loss=1.431886 val_acc=0.473600
+2026-09-09 18:11:01,893 | INFO | epoch=22 train_loss=1.445267 train_acc=0.468111 val_loss=1.399590 val_acc=0.485200
+2026-09-09 18:11:48,851 | INFO | epoch=23 train_loss=1.407892 train_acc=0.482667 val_loss=1.369442 val_acc=0.493600
+2026-09-09 18:12:36,451 | INFO | epoch=24 train_loss=1.380448 train_acc=0.495822 val_loss=1.331974 val_acc=0.507800
+2026-09-09 18:13:23,538 | INFO | epoch=25 train_loss=1.367012 train_acc=0.500556 val_loss=1.349843 val_acc=0.501400
+2026-09-09 18:14:10,596 | INFO | epoch=26 train_loss=1.345632 train_acc=0.509333 val_loss=1.322551 val_acc=0.517800
+2026-09-09 18:14:57,755 | INFO | epoch=27 train_loss=1.329216 train_acc=0.513467 val_loss=1.307339 val_acc=0.520400
+2026-09-09 18:15:44,746 | INFO | epoch=28 train_loss=1.343676 train_acc=0.509133 val_loss=1.353901 val_acc=0.507200
+2026-09-09 18:16:31,504 | INFO | epoch=29 train_loss=1.334650 train_acc=0.512800 val_loss=1.310171 val_acc=0.518400
+2026-09-09 18:17:18,546 | INFO | epoch=30 train_loss=1.306715 train_acc=0.521667 val_loss=1.300471 val_acc=0.524200
+2026-09-09 18:18:05,583 | INFO | epoch=31 train_loss=1.295330 train_acc=0.527556 val_loss=1.288668 val_acc=0.532400
+2026-09-09 18:18:53,130 | INFO | epoch=32 train_loss=1.290464 train_acc=0.529778 val_loss=1.273569 val_acc=0.537200
+2026-09-09 18:19:40,066 | INFO | epoch=33 train_loss=1.284551 train_acc=0.533400 val_loss=1.277622 val_acc=0.530800
+2026-09-09 18:20:29,393 | INFO | epoch=34 train_loss=1.299238 train_acc=0.526933 val_loss=1.283973 val_acc=0.531800
+2026-09-09 18:21:17,890 | INFO | epoch=35 train_loss=1.273989 train_acc=0.534689 val_loss=1.260932 val_acc=0.537800
+2026-09-09 18:22:05,502 | INFO | epoch=36 train_loss=1.247247 train_acc=0.546489 val_loss=1.288378 val_acc=0.527400
+2026-09-09 18:22:52,898 | INFO | epoch=37 train_loss=1.237010 train_acc=0.550000 val_loss=1.233519 val_acc=0.549400
+2026-09-09 18:23:39,683 | INFO | epoch=38 train_loss=1.220115 train_acc=0.555778 val_loss=1.221088 val_acc=0.557000
+2026-09-09 18:24:26,325 | INFO | epoch=39 train_loss=1.304314 train_acc=0.528867 val_loss=1.317124 val_acc=0.521600
+2026-09-09 18:25:12,919 | INFO | epoch=40 train_loss=1.315136 train_acc=0.527067 val_loss=1.357757 val_acc=0.514400
+2026-09-09 18:25:59,696 | INFO | epoch=41 train_loss=1.328707 train_acc=0.519067 val_loss=1.289749 val_acc=0.537200
+2026-09-09 18:26:46,252 | INFO | epoch=42 train_loss=1.348675 train_acc=0.510933 val_loss=1.321560 val_acc=0.518200
+2026-09-09 18:27:32,869 | INFO | epoch=43 train_loss=1.366795 train_acc=0.503533 val_loss=1.354664 val_acc=0.504000
+2026-09-09 18:28:19,426 | INFO | epoch=44 train_loss=1.336359 train_acc=0.512244 val_loss=1.303532 val_acc=0.526400
+2026-09-09 18:29:06,145 | INFO | epoch=45 train_loss=1.322199 train_acc=0.519000 val_loss=1.307654 val_acc=0.528200
+2026-09-09 18:29:52,781 | INFO | epoch=46 train_loss=1.299304 train_acc=0.527867 val_loss=1.270886 val_acc=0.534000
+2026-09-09 18:30:39,384 | INFO | epoch=47 train_loss=1.296403 train_acc=0.527400 val_loss=1.280372 val_acc=0.533400
+2026-09-09 18:31:26,055 | INFO | epoch=48 train_loss=1.288701 train_acc=0.530644 val_loss=1.276531 val_acc=0.534400
+2026-09-09 18:31:26,055 | INFO | early_stopping triggered at epoch=48
+2026-09-09 18:31:30,677 | INFO | Finished training: dataset=CIFAR10 model=mobilenetv3-large best_epoch=38 best_val_acc=0.557000 training_time=2263.5s total_time=2263.5s
+2026-09-09 18:31:30,677 | INFO | Test results: accuracy=0.5556 precision_macro=0.0000 recall_macro=0.0000 f1_macro=0.0000

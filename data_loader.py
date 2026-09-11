@@ -3,6 +3,8 @@ from dataclasses import dataclass
 import torch
 from torch.utils.data import DataLoader, random_split
 from torchvision import datasets, transforms
+from torchvision.datasets import ImageFolder
+from PIL import Image
 
 from utils import seed_worker_factory
 
@@ -58,7 +60,40 @@ def _build_dataset(dataset: str, data_dir: str):
         img_size = 28
         num_classes = 10
     else:
-        raise ValueError(f"Unsupported dataset: {dataset}")
+        # Support for image-folder style datasets (ISIC-2019, BrainTumor)
+        if dataset_key in ("isic2019", "isic-2019"):
+            # Expect data_dir to contain train/val/test or class subfolders
+            # Prefer if folders 'train','val','test' exist
+            normalize = transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+            common = [transforms.Resize(256), transforms.CenterCrop(224), transforms.ToTensor(), normalize]
+            if os.path.isdir(os.path.join(data_dir, "train")) and os.path.isdir(os.path.join(data_dir, "test")):
+                train_dataset = ImageFolder(root=os.path.join(data_dir, "train"), transform=transforms.Compose(common))
+                val_dataset = ImageFolder(root=os.path.join(data_dir, "test"), transform=transforms.Compose(common))
+                test_dataset = val_dataset
+            else:
+                # If no explicit splits, try to load classes directly and will be split later
+                train_dataset = ImageFolder(root=data_dir, transform=transforms.Compose(common))
+                test_dataset = None
+                val_dataset = None
+            in_channels = 3
+            img_size = 224
+            num_classes = len(train_dataset.classes)
+        elif dataset_key in ("braintumor", "brain-tumor", "brain_tumor"):
+            # Expect TRAIN and TEST directories inside data_dir
+            normalize = transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+            common = [transforms.Resize(256), transforms.CenterCrop(224), transforms.ToTensor(), normalize]
+            train_root = os.path.join(data_dir, "TRAIN")
+            test_root = os.path.join(data_dir, "TEST")
+            if not os.path.isdir(train_root) or not os.path.isdir(test_root):
+                raise ValueError(f"BrainTumor dataset missing TRAIN/TEST in {data_dir}")
+            train_dataset = ImageFolder(root=train_root, transform=transforms.Compose(common))
+            test_dataset = ImageFolder(root=test_root, transform=transforms.Compose(common))
+            val_dataset = test_dataset
+            in_channels = 3
+            img_size = 224
+            num_classes = len(train_dataset.classes)
+        else:
+            raise ValueError(f"Unsupported dataset: {dataset}")
 
     return train_dataset, test_dataset, in_channels, img_size, num_classes
 

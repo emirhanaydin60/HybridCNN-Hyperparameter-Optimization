@@ -32,3 +32,5 @@
 2026-09-15 16:33:19,633 | INFO | Attempt bs=8: Model built: total_params=4212280 trainable_params=4212280
 2026-09-15 16:34:25,726 | INFO | Starting experiment: dataset=ISIC2019 model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
 2026-09-15 16:34:25,882 | INFO | Attempt bs=8: Model built: total_params=4212280 trainable_params=4212280
+2026-09-15 16:41:29,730 | INFO | Starting experiment: dataset=ISIC2019 model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:41:29,863 | INFO | Attempt bs=8: Model built: total_params=4212280 trainable_params=4212280

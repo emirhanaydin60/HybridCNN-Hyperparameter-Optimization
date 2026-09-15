@@ -535,31 +535,20 @@ def main():
             result_json_path = os.path.join(run_dir, "result.json")
             best_model_path = os.path.join(run_dir, "best_model.pth")
 
-            # If this is CIFAR10 and a HybridCNN, prefer importing existing summary and skip training
+            # CIFAR10: do NOT run HybridCNNs here — only run baseline models on CIFAR10
             if dataset == "CIFAR10" and model.lower().startswith("hybridcnn"):
-                # try to import existing CIFAR hybrid summary
-                mapping = {
-                    "hybridcnn_gwo_run1": os.path.join("results", "CIFAR10", "GWO", "run_01", "summary.json"),
-                    "hybridcnn_gwo_run3": os.path.join("results", "CIFAR10", "GWO", "run_03", "summary.json"),
-                    "hybridcnn_woa_run3": os.path.join("results", "CIFAR10", "WOA", "run_03", "summary.json"),
-                }
-                summary_src = mapping.get(model.lower())
-                if summary_src and os.path.exists(summary_src):
-                    try:
-                        data = read_json(summary_src)
-                        write_json(result_json_path, data)
-                        status = "IMPORTED"
-                        print(f"Imported existing hybrid summary for {dataset}/{model}")
-                    except Exception:
-                        status = "FAILED"
+                # mark as not applicable for CIFAR10 final experiments
+                status = "SKIPPED_NOT_APPLICABLE"
+                write_json(result_json_path, {"status": status, "reason": "HybridCNN not run on CIFAR10 in final experiments"})
+                print(f"Skipping HybridCNN on CIFAR10 by policy: {dataset}/{model}")
+            elif dataset == "CIFAR10":
+                # baseline CIFAR10 behavior: skip if existing, else run
+                if os.path.exists(result_json_path) and os.path.exists(best_model_path):
+                    status = "SKIPPED_ALREADY"
+                    print(f"Skipping existing: {dataset}/{model}")
                 else:
-                    # No existing summary to import; fall back to normal behavior
-                    if os.path.exists(result_json_path) and os.path.exists(best_model_path):
-                        status = "SKIPPED_ALREADY"
-                        print(f"Skipping existing: {dataset}/{model}")
-                    else:
-                        info = run_single_experiment(dataset, model, config, epochs, baseline_lr, baseline_batch, start_flag=True)
-                        status = info.get("status", "FAILED")
+                    info = run_single_experiment(dataset, model, config, epochs, baseline_lr, baseline_batch, start_flag=True)
+                    status = info.get("status", "FAILED")
             else:
                 if os.path.exists(result_json_path) and os.path.exists(best_model_path):
                     status = "SKIPPED_ALREADY"

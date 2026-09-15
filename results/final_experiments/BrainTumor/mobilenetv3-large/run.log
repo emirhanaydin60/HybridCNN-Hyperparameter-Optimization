@@ -37,3 +37,5 @@
 2026-09-15 16:33:19,937 | INFO | Attempt bs=8: Model built: total_params=4207156 trainable_params=4207156
 2026-09-15 16:34:30,324 | INFO | Starting experiment: dataset=BrainTumor model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
 2026-09-15 16:34:30,422 | INFO | Attempt bs=8: Model built: total_params=4207156 trainable_params=4207156
+2026-09-15 16:41:33,967 | INFO | Starting experiment: dataset=BrainTumor model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:41:34,062 | INFO | Attempt bs=8: Model built: total_params=4207156 trainable_params=4207156

@@ -45,3 +45,5 @@
 2026-09-15 16:33:19,998 | INFO | Attempt bs=8: Model built: total_params=2482724 trainable_params=2482724
 2026-09-15 16:34:30,426 | INFO | Starting experiment: dataset=BrainTumor model=shufflenetv2-1.5x hybrid=False lr=0.001 batch_size=8 seed=42
 2026-09-15 16:34:30,479 | INFO | Attempt bs=8: Model built: total_params=2482724 trainable_params=2482724
+2026-09-15 16:41:34,066 | INFO | Starting experiment: dataset=BrainTumor model=shufflenetv2-1.5x hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:41:34,111 | INFO | Attempt bs=8: Model built: total_params=2482724 trainable_params=2482724

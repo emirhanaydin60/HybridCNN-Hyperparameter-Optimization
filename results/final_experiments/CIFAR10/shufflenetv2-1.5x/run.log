@@ -33,3 +33,5 @@
 2026-09-15 16:33:19,293 | INFO | Attempt bs=8: Model built: total_params=2488874 trainable_params=2488874
 2026-09-15 16:34:19,841 | INFO | Starting experiment: dataset=CIFAR10 model=shufflenetv2-1.5x hybrid=False lr=0.001 batch_size=8 seed=42
 2026-09-15 16:34:21,114 | INFO | Attempt bs=8: Model built: total_params=2488874 trainable_params=2488874
+2026-09-15 16:41:24,035 | INFO | Starting experiment: dataset=CIFAR10 model=shufflenetv2-1.5x hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:41:25,291 | INFO | Attempt bs=8: Model built: total_params=2488874 trainable_params=2488874

@@ -33,3 +33,5 @@
 2026-09-15 16:33:19,483 | INFO | Attempt bs=8: Model built: total_params=4017796 trainable_params=4017796
 2026-09-15 16:34:25,560 | INFO | Starting experiment: dataset=ISIC2019 model=efficientnet-b0 hybrid=False lr=0.001 batch_size=8 seed=42
 2026-09-15 16:34:25,722 | INFO | Attempt bs=8: Model built: total_params=4017796 trainable_params=4017796
+2026-09-15 16:41:29,559 | INFO | Starting experiment: dataset=ISIC2019 model=efficientnet-b0 hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:41:29,726 | INFO | Attempt bs=8: Model built: total_params=4017796 trainable_params=4017796

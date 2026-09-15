@@ -58,3 +58,5 @@
 2026-09-15 16:33:16,581 | INFO | Attempt bs=8: Model built: total_params=4020358 trainable_params=4020358
 2026-09-15 16:34:17,041 | INFO | Starting experiment: dataset=CIFAR10 model=efficientnet-b0 hybrid=False lr=0.001 batch_size=8 seed=42
 2026-09-15 16:34:18,499 | INFO | Attempt bs=8: Model built: total_params=4020358 trainable_params=4020358
+2026-09-15 16:41:21,343 | INFO | Starting experiment: dataset=CIFAR10 model=efficientnet-b0 hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:41:22,731 | INFO | Attempt bs=8: Model built: total_params=4020358 trainable_params=4020358

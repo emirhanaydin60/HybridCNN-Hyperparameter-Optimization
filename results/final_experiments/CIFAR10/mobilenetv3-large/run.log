@@ -57,3 +57,5 @@
 2026-09-15 16:33:17,974 | INFO | Attempt bs=8: Model built: total_params=4214842 trainable_params=4214842
 2026-09-15 16:34:18,512 | INFO | Starting experiment: dataset=CIFAR10 model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
 2026-09-15 16:34:19,828 | INFO | Attempt bs=8: Model built: total_params=4214842 trainable_params=4214842
+2026-09-15 16:41:22,745 | INFO | Starting experiment: dataset=CIFAR10 model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:41:24,024 | INFO | Attempt bs=8: Model built: total_params=4214842 trainable_params=4214842

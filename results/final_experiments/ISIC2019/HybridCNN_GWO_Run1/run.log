@@ -47,3 +47,5 @@ torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.53 GiB. GPU 0 ha
 2026-09-11 16:13:20,553 | INFO | Model built: total_params=7428904 trainable_params=7428904
 2026-09-15 16:34:21,128 | INFO | Starting experiment: dataset=ISIC2019 model=HybridCNN_GWO_Run1 hybrid=True lr=0.001 batch_size=8 seed=42
 2026-09-15 16:34:22,869 | INFO | Attempt bs=8: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 16:41:25,303 | INFO | Starting experiment: dataset=ISIC2019 model=HybridCNN_GWO_Run1 hybrid=True lr=0.001 batch_size=8 seed=42
+2026-09-15 16:41:26,948 | INFO | Attempt bs=8: Model built: total_params=7428904 trainable_params=7428904

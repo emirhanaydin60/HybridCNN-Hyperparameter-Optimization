@@ -53,3 +53,5 @@
 2026-09-15 16:33:19,844 | INFO | Attempt bs=8: Model built: total_params=4012672 trainable_params=4012672
 2026-09-15 16:34:30,196 | INFO | Starting experiment: dataset=BrainTumor model=efficientnet-b0 hybrid=False lr=0.001 batch_size=8 seed=42
 2026-09-15 16:34:30,320 | INFO | Attempt bs=8: Model built: total_params=4012672 trainable_params=4012672
+2026-09-15 16:41:33,870 | INFO | Starting experiment: dataset=BrainTumor model=efficientnet-b0 hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:41:33,964 | INFO | Attempt bs=8: Model built: total_params=4012672 trainable_params=4012672

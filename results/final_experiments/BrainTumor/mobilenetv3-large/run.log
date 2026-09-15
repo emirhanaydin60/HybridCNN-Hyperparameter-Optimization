@@ -31,3 +31,9 @@
 2026-09-10 16:37:59,970 | INFO | epoch=29 train_loss=0.003231 train_acc=0.998750 val_loss=0.830341 val_acc=0.910625
 2026-09-10 16:37:59,970 | INFO | early_stopping triggered at epoch=29
 2026-09-10 16:37:59,982 | INFO | Finished training: dataset=BrainTumor model=mobilenetv3-large best_epoch=19 best_val_acc=0.924375 training_time=6258.9s total_time=6259.0s
+2026-09-15 16:32:52,297 | INFO | Starting experiment: dataset=BrainTumor model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:32:52,400 | INFO | Attempt bs=8: Model built: total_params=4207156 trainable_params=4207156
+2026-09-15 16:33:19,847 | INFO | Starting experiment: dataset=BrainTumor model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:33:19,937 | INFO | Attempt bs=8: Model built: total_params=4207156 trainable_params=4207156
+2026-09-15 16:34:30,324 | INFO | Starting experiment: dataset=BrainTumor model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:34:30,422 | INFO | Attempt bs=8: Model built: total_params=4207156 trainable_params=4207156

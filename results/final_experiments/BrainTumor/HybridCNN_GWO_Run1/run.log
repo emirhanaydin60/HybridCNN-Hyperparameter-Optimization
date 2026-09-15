@@ -43,3 +43,5 @@ Traceback (most recent call last):
     )  # Calls into the C++ engine to run the backward pass
     ^
 torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.53 GiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 23.30 GiB is allocated by PyTorch, and 2.72 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-09-15 16:34:25,996 | INFO | Starting experiment: dataset=BrainTumor model=HybridCNN_GWO_Run1 hybrid=True lr=0.001 batch_size=8 seed=42
+2026-09-15 16:34:27,644 | INFO | Attempt bs=8: Model built: total_params=7427876 trainable_params=7427876

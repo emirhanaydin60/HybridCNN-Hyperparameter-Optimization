@@ -73,23 +73,33 @@ def infer_num_classes_from_folder(path):
 
 def import_existing_cifar_hybrid_results(target_dir):
     # copy existing JSON results for the 3 hybrid runs into target_dir/CIFAR10/Hybrid...
-    src_base = os.path.join("results", "CIFAR10")
+    # Look for legacy summaries in either results/CIFAR10 or results/main_experiment
+    candidates = [os.path.join("results", "CIFAR10"), os.path.join("results", "main_experiment")]
     hybrids = [
-        ("HybridCNN_GWO_Run1", os.path.join(src_base, "GWO", "run_01", "summary.json")),
-        ("HybridCNN_GWO_Run3", os.path.join(src_base, "GWO", "run_03", "summary.json")),
-        ("HybridCNN_WOA_Run3", os.path.join(src_base, "WOA", "run_03", "summary.json")),
+        ("HybridCNN_GWO_Run1", os.path.join("GWO", "run_01", "summary.json")),
+        ("HybridCNN_GWO_Run3", os.path.join("GWO", "run_03", "summary.json")),
+        ("HybridCNN_WOA_Run3", os.path.join("WOA", "run_03", "summary.json")),
     ]
     imported = []
-    for name, src in hybrids:
-        if os.path.exists(src):
-            dst_dir = os.path.join(target_dir, "CIFAR10", name)
-            ensure_dir(dst_dir)
-            try:
-                data = read_json(src)
-                write_json(os.path.join(dst_dir, "result.json"), data)
-                imported.append(name)
-            except Exception:
-                pass
+    for name, relpath in hybrids:
+        # search candidate bases for the relative path
+        found = False
+        for base in candidates:
+            src = os.path.join(base, relpath)
+            if os.path.exists(src):
+                dst_dir = os.path.join(target_dir, "CIFAR10", name)
+                ensure_dir(dst_dir)
+                try:
+                    data = read_json(src)
+                    write_json(os.path.join(dst_dir, "result.json"), data)
+                    imported.append(name)
+                    found = True
+                    break
+                except Exception:
+                    pass
+        if not found:
+            # no-op if missing
+            continue
     return imported
 
 
@@ -194,13 +204,15 @@ def prepare_data_loaders_for_dataset(dataset, data_dir, batch_size, seed, num_wo
     # Common transforms for ImageFolder datasets
     # Ensure images are converted to RGB so models expecting 3 channels won't break on grayscale data
     normalize = transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
-    transform = transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.Lambda(lambda img: img.convert('RGB')),
-        transforms.ToTensor(),
-        normalize,
-    ])
+    transform = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.Lambda(lambda img: img.convert("RGB")),
+            transforms.ToTensor(),
+            normalize,
+        ]
+    )
 
     if dataset.lower() == "isic2019":
         # Prefer train/val/test dirs
@@ -283,16 +295,26 @@ def run_single_experiment(dataset, model_name, config, epochs, baseline_lr, base
 
     # For HybridCNN use build_model with hyperparameters from summary
     if is_hybrid:
-        # map names to summary paths and load architecture hyperparameters
+        # map names to relative summary paths and search candidate bases
         mapping = {
-            "hybridcnn_gwo_run1": "results/CIFAR10/GWO/run_01/summary.json",
-            "hybridcnn_gwo_run3": "results/CIFAR10/GWO/run_03/summary.json",
-            "hybridcnn_woa_run3": "results/CIFAR10/WOA/run_03/summary.json",
+            "hybridcnn_gwo_run1": os.path.join("GWO", "run_01", "summary.json"),
+            "hybridcnn_gwo_run3": os.path.join("GWO", "run_03", "summary.json"),
+            "hybridcnn_woa_run3": os.path.join("WOA", "run_03", "summary.json"),
         }
-        summary_path = mapping.get(model_name.lower())
-        if not summary_path or not os.path.exists(summary_path):
+        rel = mapping.get(model_name.lower())
+        candidates = [os.path.join("results", "CIFAR10"), os.path.join("results", "main_experiment")]
+        summary = None
+        if rel:
+            for base in candidates:
+                p = os.path.join(base, rel)
+                if os.path.exists(p):
+                    try:
+                        summary = read_json(p)
+                        break
+                    except Exception:
+                        continue
+        if summary is None:
             return {"status": "FAILED", "reason": "missing hybrid summary"}
-        summary = read_json(summary_path)
         best_hp = summary.get("best_hyperparameters", {})
         # model_config uses architecture hyperparams from the search summary
         model_config = best_hp

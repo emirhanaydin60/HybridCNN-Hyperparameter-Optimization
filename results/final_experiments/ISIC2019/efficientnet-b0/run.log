@@ -27,3 +27,9 @@
 2026-09-10 02:26:13,804 | INFO | early_stopping triggered at epoch=24
 2026-09-10 02:27:35,246 | INFO | Finished training: dataset=ISIC2019 model=efficientnet-b0 best_epoch=14 best_val_acc=0.690363 training_time=27213.2s total_time=27213.2s
 2026-09-10 02:27:35,246 | INFO | Test results: accuracy=0.6781 precision_macro=0.0000 recall_macro=0.0000 f1_macro=0.0000
+2026-09-15 16:32:51,606 | INFO | Starting experiment: dataset=ISIC2019 model=efficientnet-b0 hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:32:51,856 | INFO | Attempt bs=8: Model built: total_params=4017796 trainable_params=4017796
+2026-09-15 16:33:19,312 | INFO | Starting experiment: dataset=ISIC2019 model=efficientnet-b0 hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:33:19,483 | INFO | Attempt bs=8: Model built: total_params=4017796 trainable_params=4017796
+2026-09-15 16:34:25,560 | INFO | Starting experiment: dataset=ISIC2019 model=efficientnet-b0 hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:34:25,722 | INFO | Attempt bs=8: Model built: total_params=4017796 trainable_params=4017796

@@ -21,3 +21,9 @@
 2026-09-10 10:29:06,911 | INFO | early_stopping triggered at epoch=18
 2026-09-10 10:30:03,812 | INFO | Finished training: dataset=ISIC2019 model=shufflenetv2-1.5x best_epoch=8 best_val_acc=0.659163 training_time=12076.5s total_time=12076.5s
 2026-09-10 10:30:03,813 | INFO | Test results: accuracy=0.6570 precision_macro=0.0000 recall_macro=0.0000 f1_macro=0.0000
+2026-09-15 16:32:52,043 | INFO | Starting experiment: dataset=ISIC2019 model=shufflenetv2-1.5x hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:32:52,169 | INFO | Attempt bs=8: Model built: total_params=2486824 trainable_params=2486824
+2026-09-15 16:33:19,636 | INFO | Starting experiment: dataset=ISIC2019 model=shufflenetv2-1.5x hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:33:19,741 | INFO | Attempt bs=8: Model built: total_params=2486824 trainable_params=2486824
+2026-09-15 16:34:25,886 | INFO | Starting experiment: dataset=ISIC2019 model=shufflenetv2-1.5x hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:34:25,992 | INFO | Attempt bs=8: Model built: total_params=2486824 trainable_params=2486824

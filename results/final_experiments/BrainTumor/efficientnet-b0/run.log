@@ -47,3 +47,9 @@
 2026-09-10 14:53:40,851 | INFO | epoch=45 train_loss=0.000328 train_acc=1.000000 val_loss=1.031797 val_acc=0.919375
 2026-09-10 14:53:40,851 | INFO | early_stopping triggered at epoch=45
 2026-09-10 14:53:40,865 | INFO | Finished training: dataset=BrainTumor model=efficientnet-b0 best_epoch=35 best_val_acc=0.926875 training_time=15659.4s total_time=15659.5s
+2026-09-15 16:32:52,180 | INFO | Starting experiment: dataset=BrainTumor model=efficientnet-b0 hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:32:52,292 | INFO | Attempt bs=8: Model built: total_params=4012672 trainable_params=4012672
+2026-09-15 16:33:19,749 | INFO | Starting experiment: dataset=BrainTumor model=efficientnet-b0 hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:33:19,844 | INFO | Attempt bs=8: Model built: total_params=4012672 trainable_params=4012672
+2026-09-15 16:34:30,196 | INFO | Starting experiment: dataset=BrainTumor model=efficientnet-b0 hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:34:30,320 | INFO | Attempt bs=8: Model built: total_params=4012672 trainable_params=4012672

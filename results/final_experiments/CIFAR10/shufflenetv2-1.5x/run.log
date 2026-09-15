@@ -27,3 +27,9 @@
 2026-09-09 18:50:06,190 | INFO | early_stopping triggered at epoch=24
 2026-09-09 18:50:10,860 | INFO | Finished training: dataset=CIFAR10 model=shufflenetv2-1.5x best_epoch=14 best_val_acc=0.715400 training_time=1114.2s total_time=1114.3s
 2026-09-09 18:50:10,861 | INFO | Test results: accuracy=0.7086 precision_macro=0.0000 recall_macro=0.0000 f1_macro=0.0000
+2026-09-15 16:32:50,154 | INFO | Starting experiment: dataset=CIFAR10 model=shufflenetv2-1.5x hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:32:51,585 | INFO | Attempt bs=8: Model built: total_params=2488874 trainable_params=2488874
+2026-09-15 16:33:17,989 | INFO | Starting experiment: dataset=CIFAR10 model=shufflenetv2-1.5x hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:33:19,293 | INFO | Attempt bs=8: Model built: total_params=2488874 trainable_params=2488874
+2026-09-15 16:34:19,841 | INFO | Starting experiment: dataset=CIFAR10 model=shufflenetv2-1.5x hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:34:21,114 | INFO | Attempt bs=8: Model built: total_params=2488874 trainable_params=2488874

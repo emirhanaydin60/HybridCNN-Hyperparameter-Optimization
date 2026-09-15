@@ -26,3 +26,9 @@
 2026-09-10 07:06:46,028 | INFO | early_stopping triggered at epoch=23
 2026-09-10 07:07:50,225 | INFO | Finished training: dataset=ISIC2019 model=mobilenetv3-large best_epoch=13 best_val_acc=0.680885 training_time=16750.5s total_time=16750.5s
 2026-09-10 07:07:50,225 | INFO | Test results: accuracy=0.6604 precision_macro=0.0000 recall_macro=0.0000 f1_macro=0.0000
+2026-09-15 16:32:51,862 | INFO | Starting experiment: dataset=ISIC2019 model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:32:52,037 | INFO | Attempt bs=8: Model built: total_params=4212280 trainable_params=4212280
+2026-09-15 16:33:19,487 | INFO | Starting experiment: dataset=ISIC2019 model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:33:19,633 | INFO | Attempt bs=8: Model built: total_params=4212280 trainable_params=4212280
+2026-09-15 16:34:25,726 | INFO | Starting experiment: dataset=ISIC2019 model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:34:25,882 | INFO | Attempt bs=8: Model built: total_params=4212280 trainable_params=4212280

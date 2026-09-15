@@ -1,0 +1,2 @@
+2026-09-15 16:34:12,974 | INFO | Starting experiment: dataset=CIFAR10 model=HybridCNN_GWO_Run1 hybrid=True lr=0.001 batch_size=8 seed=42
+2026-09-15 16:34:14,330 | INFO | Attempt bs=8: Model built: total_params=7429418 trainable_params=7429418

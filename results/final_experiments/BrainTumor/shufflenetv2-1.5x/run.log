@@ -39,3 +39,9 @@
 2026-09-10 19:04:40,548 | INFO | epoch=37 train_loss=0.000812 train_acc=0.999643 val_loss=0.962019 val_acc=0.915000
 2026-09-10 19:04:40,548 | INFO | early_stopping triggered at epoch=37
 2026-09-10 19:04:40,560 | INFO | Finished training: dataset=BrainTumor model=shufflenetv2-1.5x best_epoch=27 best_val_acc=0.918750 training_time=8800.5s total_time=8800.5s
+2026-09-15 16:32:52,405 | INFO | Starting experiment: dataset=BrainTumor model=shufflenetv2-1.5x hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:32:52,472 | INFO | Attempt bs=8: Model built: total_params=2482724 trainable_params=2482724
+2026-09-15 16:33:19,941 | INFO | Starting experiment: dataset=BrainTumor model=shufflenetv2-1.5x hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:33:19,998 | INFO | Attempt bs=8: Model built: total_params=2482724 trainable_params=2482724
+2026-09-15 16:34:30,426 | INFO | Starting experiment: dataset=BrainTumor model=shufflenetv2-1.5x hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:34:30,479 | INFO | Attempt bs=8: Model built: total_params=2482724 trainable_params=2482724

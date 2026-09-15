@@ -51,3 +51,9 @@
 2026-09-09 18:31:26,055 | INFO | early_stopping triggered at epoch=48
 2026-09-09 18:31:30,677 | INFO | Finished training: dataset=CIFAR10 model=mobilenetv3-large best_epoch=38 best_val_acc=0.557000 training_time=2263.5s total_time=2263.5s
 2026-09-09 18:31:30,677 | INFO | Test results: accuracy=0.5556 precision_macro=0.0000 recall_macro=0.0000 f1_macro=0.0000
+2026-09-15 16:32:48,794 | INFO | Starting experiment: dataset=CIFAR10 model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:32:50,139 | INFO | Attempt bs=8: Model built: total_params=4214842 trainable_params=4214842
+2026-09-15 16:33:16,594 | INFO | Starting experiment: dataset=CIFAR10 model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:33:17,974 | INFO | Attempt bs=8: Model built: total_params=4214842 trainable_params=4214842
+2026-09-15 16:34:18,512 | INFO | Starting experiment: dataset=CIFAR10 model=mobilenetv3-large hybrid=False lr=0.001 batch_size=8 seed=42
+2026-09-15 16:34:19,828 | INFO | Attempt bs=8: Model built: total_params=4214842 trainable_params=4214842

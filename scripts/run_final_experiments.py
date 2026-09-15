@@ -34,6 +34,9 @@ MODELS = [
     "shufflenetv2-1.5x",
 ]
 
+# When True, force all experiments to use the same training settings (batch, lr) from config
+USE_UNIFORM_SETTINGS = True
+
 MASTER_CSV = os.path.join(RESULTS_ROOT, "master_results.csv")
 MASTER_JSON = os.path.join(RESULTS_ROOT, "master_results.json")
 FINAL_SUMMARY = os.path.join(RESULTS_ROOT, "final_summary.json")
@@ -189,8 +192,15 @@ def prepare_data_loaders_for_dataset(dataset, data_dir, batch_size, seed, num_wo
         return bundle.train_loader, bundle.val_loader, bundle.test_loader, bundle.in_channels, bundle.img_size, bundle.num_classes
 
     # Common transforms for ImageFolder datasets
+    # Ensure images are converted to RGB so models expecting 3 channels won't break on grayscale data
     normalize = transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
-    transform = transforms.Compose([transforms.Resize(256), transforms.CenterCrop(224), transforms.ToTensor(), normalize])
+    transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.Lambda(lambda img: img.convert('RGB')),
+        transforms.ToTensor(),
+        normalize,
+    ])
 
     if dataset.lower() == "isic2019":
         # Prefer train/val/test dirs
@@ -273,7 +283,7 @@ def run_single_experiment(dataset, model_name, config, epochs, baseline_lr, base
 
     # For HybridCNN use build_model with hyperparameters from summary
     if is_hybrid:
-        # map names to summary paths
+        # map names to summary paths and load architecture hyperparameters
         mapping = {
             "hybridcnn_gwo_run1": "results/CIFAR10/GWO/run_01/summary.json",
             "hybridcnn_gwo_run3": "results/CIFAR10/GWO/run_03/summary.json",
@@ -284,14 +294,24 @@ def run_single_experiment(dataset, model_name, config, epochs, baseline_lr, base
             return {"status": "FAILED", "reason": "missing hybrid summary"}
         summary = read_json(summary_path)
         best_hp = summary.get("best_hyperparameters", {})
+        # model_config uses architecture hyperparams from the search summary
         model_config = best_hp
-        lr = best_hp.get("learning_rate", config.learning_rate)
-        batch_size = best_hp.get("batch_size", config.batch_size)
+        # training hyperparams: either force uniform from config, or use search-found values
+        if USE_UNIFORM_SETTINGS:
+            lr = config.learning_rate
+            batch_size = config.batch_size
+        else:
+            lr = best_hp.get("learning_rate", config.learning_rate)
+            batch_size = best_hp.get("batch_size", config.batch_size)
     else:
         # baseline
         model_config = {"model_name": model_name}
-        lr = baseline_lr
-        batch_size = baseline_batch
+        if USE_UNIFORM_SETTINGS:
+            lr = config.learning_rate
+            batch_size = config.batch_size
+        else:
+            lr = baseline_lr
+            batch_size = baseline_batch
 
     logger.info(
         "Starting experiment: dataset=%s model=%s hybrid=%s lr=%s batch_size=%s seed=%s",

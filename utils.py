@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import random
+import functools
 from typing import Callable
 
 import numpy as np
@@ -29,16 +30,17 @@ def make_torch_generator(seed: int) -> torch.Generator:
     return generator
 
 
-def seed_worker_factory(base_seed: int) -> Callable[[int], None]:
-    def seed_worker(worker_id: int) -> None:
-        worker_seed = base_seed + worker_id
-        np.random.seed(worker_seed)
-        random.seed(worker_seed)
-        torch.manual_seed(worker_seed)
-        if torch.cuda.is_available():
-            torch.cuda.manual_seed_all(worker_seed)
+def _seed_worker_top(worker_id: int, base_seed: int) -> None:
+    worker_seed = base_seed + worker_id
+    np.random.seed(worker_seed)
+    random.seed(worker_seed)
+    torch.manual_seed(worker_seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(worker_seed)
 
-    return seed_worker
+
+def seed_worker_factory(base_seed: int) -> Callable[[int], None]:
+    return functools.partial(_seed_worker_top, base_seed=base_seed)
 
 
 def setup_logging(log_path: str) -> logging.Logger:

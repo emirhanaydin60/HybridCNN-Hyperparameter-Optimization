@@ -356,7 +356,7 @@ def run_single_experiment(dataset, model_name, config, epochs, baseline_lr, base
         candidates = []
         if isinstance(hp_bs, int) and hp_bs > 0:
             candidates.append(hp_bs)
-        for b in (16, 12, 8):
+        for b in (64, 32, 16, 12, 8, 4, 2, 1):
             if b not in candidates:
                 candidates.append(b)
     else:
@@ -444,7 +444,41 @@ def run_single_experiment(dataset, model_name, config, epochs, baseline_lr, base
         msg = str(last_exception) if last_exception else "training failed for unknown reasons"
         logger.exception("All attempts failed for %s/%s: %s", dataset, model_name, msg)
         write_json(os.path.join(run_dir, "result.json"), {"status": "FAILED", "exception": msg})
-        return {"status": "FAILED", "exception": msg}
+        # If GPU was used and all batch attempts failed due to OOM, try a final CPU attempt with smallest batch
+        try:
+            import torch
+
+            if torch.cuda.is_available():
+                smallest_bs = min(candidates)
+                try:
+                    logger.info("Retrying on CPU with batch_size=%s after GPU OOMs", smallest_bs)
+                    train_loader, val_loader, test_loader, in_channels, img_size, num_classes = prepare_data_loaders_for_dataset(dataset, data_dir, smallest_bs, seed, 0)
+                    # build model on CPU
+                    if is_hybrid:
+                        model = build_model(model_config, in_channels, img_size, num_classes)
+                    else:
+                        model = create_model(model_name, num_classes=num_classes, device="cpu")
+                    device = "cpu"
+                    model, history, best_val_acc, best_epoch, train_time = train_model(
+                        model,
+                        train_loader,
+                        val_loader,
+                        device,
+                        learning_rate=lr,
+                        epochs=epochs,
+                        patience=config.patience,
+                        logger=logger,
+                        checkpoint_path=os.path.join(run_dir, "best_model.pth"),
+                    )
+                    total_time = time.perf_counter() - start_time
+                    successful = True
+                except Exception as e:
+                    logger.exception("CPU retry also failed: %s", e)
+        except Exception:
+            pass
+
+        if not successful:
+            return {"status": "FAILED", "exception": msg}
 
     # Evaluation
     if test_loader is not None:

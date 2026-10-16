@@ -1,0 +1,2 @@
+2026-10-16 15:34:39,026 | INFO | Starting isolated experiment dataset=ISIC2019 model=HybridCNN_GWO_Run1 batch_size=32 accumulation_steps=1 amp=True classes={'AK': 0, 'BCC': 1, 'BKL': 2, 'DF': 3, 'MEL': 4, 'NV': 5, 'SCC': 6, 'VASC': 7}
+2026-10-16 15:37:18,334 | INFO | Starting isolated experiment dataset=ISIC2019 model=HybridCNN_GWO_Run1 batch_size=8 accumulation_steps=4 amp=True classes={'AK': 0, 'BCC': 1, 'BKL': 2, 'DF': 3, 'MEL': 4, 'NV': 5, 'SCC': 6, 'VASC': 7}

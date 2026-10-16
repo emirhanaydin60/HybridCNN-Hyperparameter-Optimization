@@ -1,0 +1,66 @@
+{
+  "hardware": {
+    "gpu": "NVIDIA GeForce RTX 3060",
+    "vram_gb_nominal": 12,
+    "mixed_precision": true,
+    "safe_measured_batch_size": 8
+  },
+  "dataset_sizes": {
+    "ISIC2019_train": 17732,
+    "ISIC2019_validation": 2532,
+    "ISIC2019_test": 5067,
+    "BrainTumor_train": 5600,
+    "BrainTumor_test": 1600,
+    "BrainTumor_corrected_train_estimate": 5040,
+    "BrainTumor_corrected_validation_estimate": 560
+  },
+  "benchmarks": {
+    "ISIC2019_HybridCNN_GWO_Run1_batch8_five_batches_seconds": 5.54,
+    "BrainTumor_HybridCNN_GWO_Run1_batch8_five_batches_seconds": 5.38
+  },
+  "estimates": [
+    {
+      "dataset": "ISIC2019",
+      "model": "HybridCNN_GWO_Run1",
+      "estimated_50_epoch_hours": [34, 40],
+      "confidence": "medium",
+      "basis": "Measured batch-8 AMP benchmark; excludes validation/test overhead."
+    },
+    {
+      "dataset": "ISIC2019",
+      "model": "HybridCNN_GWO_Run3",
+      "estimated_50_epoch_hours": [18, 28],
+      "confidence": "low-medium",
+      "basis": "Scaled planning range from smaller parameter count; not directly trained."
+    },
+    {
+      "dataset": "ISIC2019",
+      "model": "HybridCNN_WOA_Run3",
+      "estimated_50_epoch_hours": [34, 40],
+      "confidence": "medium",
+      "basis": "Similar high-resolution activation and parameter scale to GWO_Run1."
+    },
+    {
+      "dataset": "BrainTumor",
+      "model": "HybridCNN_GWO_Run1",
+      "estimated_50_epoch_hours": [10, 13],
+      "confidence": "medium",
+      "basis": "Measured batch-8 AMP benchmark; excludes validation/test overhead."
+    },
+    {
+      "dataset": "BrainTumor",
+      "model": "HybridCNN_GWO_Run3",
+      "estimated_50_epoch_hours": [6, 10],
+      "confidence": "low-medium",
+      "basis": "Scaled planning range from smaller parameter count; not directly trained."
+    },
+    {
+      "dataset": "BrainTumor",
+      "model": "HybridCNN_WOA_Run3",
+      "estimated_50_epoch_hours": [10, 13],
+      "confidence": "medium",
+      "basis": "Similar high-resolution activation and parameter scale to GWO_Run1."
+    }
+  ],
+  "decision": "No epoch, architecture, image-resolution, or dataset protocol change was applied automatically."
+}

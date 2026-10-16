@@ -1,0 +1,11 @@
+{
+  "total_experiments": 18,
+  "successful_or_reused": 9,
+  "datasets": {
+    "CIFAR10": 6,
+    "ISIC2019": 6,
+    "BrainTumor": 6
+  },
+  "output_root": "results\\completion_experiments",
+  "notes": "Existing result directories were not modified. New experiments and consolidated references are isolated here."
+}

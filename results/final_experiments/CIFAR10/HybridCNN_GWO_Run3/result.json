@@ -1,3 +1,4 @@
 {
-  "status": "SKIPPED_SMOKE"
+  "status": "SKIPPED_NOT_APPLICABLE",
+  "reason": "HybridCNN not run on CIFAR10 in final experiments"
 }

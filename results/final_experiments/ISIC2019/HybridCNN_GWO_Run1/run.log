@@ -49,3 +49,473 @@ torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.53 GiB. GPU 0 ha
 2026-09-15 16:34:22,869 | INFO | Attempt bs=8: Model built: total_params=7428904 trainable_params=7428904
 2026-09-15 16:41:25,303 | INFO | Starting experiment: dataset=ISIC2019 model=HybridCNN_GWO_Run1 hybrid=True lr=0.001 batch_size=8 seed=42
 2026-09-15 16:41:26,948 | INFO | Attempt bs=8: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 16:42:23,661 | INFO | Starting experiment: dataset=ISIC2019 model=HybridCNN_GWO_Run1 hybrid=True lr=0.001 batch_size=128 seed=42
+2026-09-15 16:42:25,358 | INFO | Attempt bs=128: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 16:42:44,451 | ERROR | Training attempt bs=128 failed: CUDA out of memory. Tried to allocate 6.12 GiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 24.63 GiB is allocated by PyTorch, and 7.28 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\scripts\run_final_experiments.py", line 394, in run_single_experiment
+    model, history, best_val_acc, best_epoch, train_time = train_model(
+                                                           ~~~~~~~~~~~^
+        model,
+        ^^^^^^
+    ...<7 lines>...
+        checkpoint_path=os.path.join(run_dir, "best_model.pth"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\experiment_runner.py", line 181, in train_model
+    train_loss, train_accuracy = train_one_epoch(model, train_loader, optimizer, device, criterion)
+                                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\metrics.py", line 18, in train_one_epoch
+    logits = model(xb)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 148, in forward
+    return self.classifier(self.forward_features(x))
+                           ~~~~~~~~~~~~~~~~~~~~~^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 141, in forward_features
+    x = self.residual1(x)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 42, in forward
+    x = self.bn2(self.conv2(x))
+                 ~~~~~~~~~~^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\conv.py", line 548, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\conv.py", line 543, in _conv_forward
+    return F.conv2d(
+           ~~~~~~~~^
+        input, weight, bias, self.stride, self.padding, self.dilation, self.groups
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 6.12 GiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 24.63 GiB is allocated by PyTorch, and 7.28 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-09-15 16:42:44,455 | INFO | OOM at bs=128, will try smaller batch
+2026-09-15 16:42:46,000 | INFO | Attempt bs=16: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 16:42:46,971 | ERROR | Training attempt bs=16 failed: CUDA out of memory. Tried to allocate 784.00 MiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 26.22 GiB is allocated by PyTorch, and 23.37 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\scripts\run_final_experiments.py", line 394, in run_single_experiment
+    model, history, best_val_acc, best_epoch, train_time = train_model(
+                                                           ~~~~~~~~~~~^
+        model,
+        ^^^^^^
+    ...<7 lines>...
+        checkpoint_path=os.path.join(run_dir, "best_model.pth"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\experiment_runner.py", line 181, in train_model
+    train_loss, train_accuracy = train_one_epoch(model, train_loader, optimizer, device, criterion)
+                                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\metrics.py", line 18, in train_one_epoch
+    logits = model(xb)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 148, in forward
+    return self.classifier(self.forward_features(x))
+                           ~~~~~~~~~~~~~~~~~~~~~^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 141, in forward_features
+    x = self.residual1(x)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 41, in forward
+    x = self.relu(self.bn1(self.conv1(x)))
+                           ~~~~~~~~~~^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\conv.py", line 548, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\conv.py", line 543, in _conv_forward
+    return F.conv2d(
+           ~~~~~~~~^
+        input, weight, bias, self.stride, self.padding, self.dilation, self.groups
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 784.00 MiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 26.22 GiB is allocated by PyTorch, and 23.37 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-09-15 16:42:48,286 | INFO | OOM at bs=16, will try smaller batch
+2026-09-15 16:42:49,875 | INFO | Attempt bs=12: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 16:43:53,136 | INFO | Starting experiment: dataset=ISIC2019 model=HybridCNN_GWO_Run1 hybrid=True lr=0.001 batch_size=128 seed=42
+2026-09-15 16:43:55,028 | INFO | Attempt bs=128: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 16:48:33,204 | INFO | Starting experiment: dataset=ISIC2019 model=HybridCNN_GWO_Run1 hybrid=True lr=0.001 batch_size=128 seed=42
+2026-09-15 16:48:34,754 | INFO | Attempt bs=128: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 16:48:47,664 | ERROR | Training attempt bs=128 failed: CUDA out of memory. Tried to allocate 6.12 GiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 24.63 GiB is allocated by PyTorch, and 7.28 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\scripts\run_final_experiments.py", line 394, in run_single_experiment
+    model, history, best_val_acc, best_epoch, train_time = train_model(
+                                                           ~~~~~~~~~~~^
+        model,
+        ^^^^^^
+    ...<7 lines>...
+        checkpoint_path=os.path.join(run_dir, "best_model.pth"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\experiment_runner.py", line 181, in train_model
+    train_loss, train_accuracy = train_one_epoch(model, train_loader, optimizer, device, criterion)
+                                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\metrics.py", line 18, in train_one_epoch
+    logits = model(xb)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 148, in forward
+    return self.classifier(self.forward_features(x))
+                           ~~~~~~~~~~~~~~~~~~~~~^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 141, in forward_features
+    x = self.residual1(x)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 42, in forward
+    x = self.bn2(self.conv2(x))
+                 ~~~~~~~~~~^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\conv.py", line 548, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\conv.py", line 543, in _conv_forward
+    return F.conv2d(
+           ~~~~~~~~^
+        input, weight, bias, self.stride, self.padding, self.dilation, self.groups
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 6.12 GiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 24.63 GiB is allocated by PyTorch, and 7.28 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-09-15 16:48:47,668 | INFO | OOM at bs=128, will try smaller batch
+2026-09-15 16:48:49,188 | INFO | Attempt bs=64: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 16:48:51,263 | ERROR | Training attempt bs=64 failed: CUDA out of memory. Tried to allocate 3.06 GiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 24.72 GiB is allocated by PyTorch, and 13.81 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\scripts\run_final_experiments.py", line 394, in run_single_experiment
+    model, history, best_val_acc, best_epoch, train_time = train_model(
+                                                           ~~~~~~~~~~~^
+        model,
+        ^^^^^^
+    ...<7 lines>...
+        checkpoint_path=os.path.join(run_dir, "best_model.pth"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\experiment_runner.py", line 181, in train_model
+    train_loss, train_accuracy = train_one_epoch(model, train_loader, optimizer, device, criterion)
+                                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\metrics.py", line 18, in train_one_epoch
+    logits = model(xb)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 148, in forward
+    return self.classifier(self.forward_features(x))
+                           ~~~~~~~~~~~~~~~~~~~~~^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 140, in forward_features
+    x = self.stem(x)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 26, in forward
+    return self.block(x)
+           ~~~~~~~~~~^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\container.py", line 250, in forward
+    input = module(input)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\conv.py", line 548, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\conv.py", line 543, in _conv_forward
+    return F.conv2d(
+           ~~~~~~~~^
+        input, weight, bias, self.stride, self.padding, self.dilation, self.groups
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 3.06 GiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 24.72 GiB is allocated by PyTorch, and 13.81 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-09-15 16:48:52,650 | INFO | OOM at bs=64, will try smaller batch
+2026-09-15 16:48:54,214 | INFO | Attempt bs=32: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 16:50:44,652 | INFO | Starting experiment: dataset=ISIC2019 model=HybridCNN_GWO_Run1 hybrid=True lr=0.001 batch_size=4 seed=42
+2026-09-15 16:50:46,369 | INFO | Attempt bs=4: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 16:52:31,670 | INFO | Starting experiment: dataset=ISIC2019 model=HybridCNN_GWO_Run1 hybrid=True lr=0.001 batch_size=128 seed=42
+2026-09-15 16:52:33,276 | INFO | Attempt bs=128: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 16:52:46,026 | ERROR | Training attempt bs=128 failed: CUDA out of memory. Tried to allocate 6.12 GiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 24.63 GiB is allocated by PyTorch, and 7.28 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\scripts\run_final_experiments.py", line 394, in run_single_experiment
+    model, history, best_val_acc, best_epoch, train_time = train_model(
+                                                           ~~~~~~~~~~~^
+        model,
+        ^^^^^^
+    ...<7 lines>...
+        checkpoint_path=os.path.join(run_dir, "best_model.pth"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\experiment_runner.py", line 181, in train_model
+    train_loss, train_accuracy = train_one_epoch(model, train_loader, optimizer, device, criterion)
+                                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\metrics.py", line 18, in train_one_epoch
+    logits = model(xb)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 148, in forward
+    return self.classifier(self.forward_features(x))
+                           ~~~~~~~~~~~~~~~~~~~~~^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 141, in forward_features
+    x = self.residual1(x)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 42, in forward
+    x = self.bn2(self.conv2(x))
+                 ~~~~~~~~~~^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\conv.py", line 548, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\conv.py", line 543, in _conv_forward
+    return F.conv2d(
+           ~~~~~~~~^
+        input, weight, bias, self.stride, self.padding, self.dilation, self.groups
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 6.12 GiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 24.63 GiB is allocated by PyTorch, and 7.28 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-09-15 16:52:46,030 | INFO | OOM at bs=128, will try smaller batch
+2026-09-15 16:52:47,526 | INFO | Attempt bs=64: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 16:52:49,316 | ERROR | Training attempt bs=64 failed: CUDA out of memory. Tried to allocate 3.06 GiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 24.72 GiB is allocated by PyTorch, and 13.81 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\scripts\run_final_experiments.py", line 394, in run_single_experiment
+    model, history, best_val_acc, best_epoch, train_time = train_model(
+                                                           ~~~~~~~~~~~^
+        model,
+        ^^^^^^
+    ...<7 lines>...
+        checkpoint_path=os.path.join(run_dir, "best_model.pth"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\experiment_runner.py", line 181, in train_model
+    train_loss, train_accuracy = train_one_epoch(model, train_loader, optimizer, device, criterion)
+                                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\metrics.py", line 18, in train_one_epoch
+    logits = model(xb)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 148, in forward
+    return self.classifier(self.forward_features(x))
+                           ~~~~~~~~~~~~~~~~~~~~~^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 140, in forward_features
+    x = self.stem(x)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 26, in forward
+    return self.block(x)
+           ~~~~~~~~~~^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\container.py", line 250, in forward
+    input = module(input)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\conv.py", line 548, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\conv.py", line 543, in _conv_forward
+    return F.conv2d(
+           ~~~~~~~~^
+        input, weight, bias, self.stride, self.padding, self.dilation, self.groups
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 3.06 GiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 24.72 GiB is allocated by PyTorch, and 13.81 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-09-15 16:52:50,481 | INFO | OOM at bs=64, will try smaller batch
+2026-09-15 16:52:52,123 | INFO | Attempt bs=32: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 16:53:46,328 | ERROR | Training attempt bs=32 failed: CUDA out of memory. Tried to allocate 1.53 GiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 24.68 GiB is allocated by PyTorch, and 1.09 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\scripts\run_final_experiments.py", line 394, in run_single_experiment
+    model, history, best_val_acc, best_epoch, train_time = train_model(
+                                                           ~~~~~~~~~~~^
+        model,
+        ^^^^^^
+    ...<7 lines>...
+        checkpoint_path=os.path.join(run_dir, "best_model.pth"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\experiment_runner.py", line 181, in train_model
+    train_loss, train_accuracy = train_one_epoch(model, train_loader, optimizer, device, criterion)
+                                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\metrics.py", line 20, in train_one_epoch
+    loss.backward()
+    ~~~~~~~~~~~~~^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\_tensor.py", line 625, in backward
+    torch.autograd.backward(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        self, gradient, retain_graph, create_graph, inputs=inputs
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\autograd\__init__.py", line 354, in backward
+    _engine_run_backward(
+    ~~~~~~~~~~~~~~~~~~~~^
+        tensors,
+        ^^^^^^^^
+    ...<5 lines>...
+        accumulate_grad=True,
+        ^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\autograd\graph.py", line 841, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        t_outputs, *args, **kwargs
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )  # Calls into the C++ engine to run the backward pass
+    ^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.53 GiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 24.68 GiB is allocated by PyTorch, and 1.09 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-09-15 16:53:46,623 | INFO | OOM at bs=32, will try smaller batch
+2026-09-15 16:53:48,275 | INFO | Attempt bs=16: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 16:53:54,611 | ERROR | Training attempt bs=16 failed: CUDA out of memory. Tried to allocate 784.00 MiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 25.42 GiB is allocated by PyTorch, and 1.02 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Traceback (most recent call last):
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\scripts\run_final_experiments.py", line 394, in run_single_experiment
+    model, history, best_val_acc, best_epoch, train_time = train_model(
+                                                           ~~~~~~~~~~~^
+        model,
+        ^^^^^^
+    ...<7 lines>...
+        checkpoint_path=os.path.join(run_dir, "best_model.pth"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\experiment_runner.py", line 181, in train_model
+    train_loss, train_accuracy = train_one_epoch(model, train_loader, optimizer, device, criterion)
+                                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\metrics.py", line 18, in train_one_epoch
+    logits = model(xb)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 148, in forward
+    return self.classifier(self.forward_features(x))
+                           ~~~~~~~~~~~~~~~~~~~~~^^^
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 141, in forward_features
+    x = self.residual1(x)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "c:\Users\emirh\Desktop\Projects\CNN-Hyperparameter-Optimization-GWO\model.py", line 42, in forward
+    x = self.bn2(self.conv2(x))
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\modules\batchnorm.py", line 193, in forward
+    return F.batch_norm(
+           ~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<11 lines>...
+        self.eps,
+        ^^^^^^^^^
+    )
+    ^
+  File "C:\Users\emirh\anaconda3\envs\pytorch-v1\Lib\site-packages\torch\nn\functional.py", line 2813, in batch_norm
+    return torch.batch_norm(
+           ~~~~~~~~~~~~~~~~^
+        input,
+        ^^^^^^
+    ...<7 lines>...
+        torch.backends.cudnn.enabled,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 784.00 MiB. GPU 0 has a total capacity of 12.00 GiB of which 0 bytes is free. Of the allocated memory 25.42 GiB is allocated by PyTorch, and 1.02 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-09-15 16:53:56,443 | INFO | OOM at bs=16, will try smaller batch
+2026-09-15 16:53:57,963 | INFO | Attempt bs=12: Model built: total_params=7428904 trainable_params=7428904
+2026-09-15 20:08:39,433 | INFO | epoch=1 train_loss=1.293987 train_acc=0.521317 val_loss=1.202642 val_acc=0.567536
+2026-09-15 23:23:03,927 | INFO | epoch=2 train_loss=1.223591 train_acc=0.551545 val_loss=1.180717 val_acc=0.565956
+2026-09-16 02:37:28,837 | INFO | epoch=3 train_loss=1.186959 train_acc=0.566490 val_loss=1.146643 val_acc=0.577804
+2026-09-16 05:51:52,277 | INFO | epoch=4 train_loss=1.157500 train_acc=0.577656 val_loss=1.131111 val_acc=0.585308
+2026-09-16 09:06:12,282 | INFO | epoch=5 train_loss=1.136662 train_acc=0.581096 val_loss=1.107237 val_acc=0.598736
+2026-09-16 12:20:35,282 | INFO | epoch=6 train_loss=1.103490 train_acc=0.593672 val_loss=1.071657 val_acc=0.612954
+2026-09-16 15:35:06,270 | INFO | epoch=7 train_loss=1.085041 train_acc=0.603260 val_loss=1.062471 val_acc=0.605845
+2026-09-16 18:49:39,122 | INFO | epoch=8 train_loss=1.064565 train_acc=0.605967 val_loss=1.053931 val_acc=0.613744
+2026-09-16 22:04:09,566 | INFO | epoch=9 train_loss=1.055094 train_acc=0.612508 val_loss=1.027599 val_acc=0.611374
+2026-09-17 01:18:31,324 | INFO | epoch=10 train_loss=1.037849 train_acc=0.618261 val_loss=0.991469 val_acc=0.633096
+2026-09-17 04:32:53,267 | INFO | epoch=11 train_loss=1.028909 train_acc=0.619558 val_loss=1.067467 val_acc=0.642970
+2026-09-17 07:47:14,520 | INFO | epoch=12 train_loss=1.017490 train_acc=0.624746 val_loss=1.037410 val_acc=0.630727
+2026-09-17 11:01:36,732 | INFO | epoch=13 train_loss=1.004306 train_acc=0.629822 val_loss=1.084777 val_acc=0.627567
+2026-09-17 14:16:04,357 | INFO | epoch=14 train_loss=0.995741 train_acc=0.632867 val_loss=1.068370 val_acc=0.629937
+2026-09-17 17:30:46,086 | INFO | epoch=15 train_loss=0.989650 train_acc=0.634108 val_loss=1.050045 val_acc=0.630332
+2026-09-17 20:45:18,479 | INFO | epoch=16 train_loss=0.981654 train_acc=0.639465 val_loss=1.048637 val_acc=0.642575
+2026-09-18 01:02:37,546 | INFO | epoch=17 train_loss=0.950890 train_acc=0.647135 val_loss=1.019486 val_acc=0.638231
+2026-09-18 05:36:49,089 | INFO | epoch=18 train_loss=0.940179 train_acc=0.652662 val_loss=1.088107 val_acc=0.647709
+2026-09-18 12:09:44,833 | INFO | epoch=19 train_loss=0.934091 train_acc=0.655369 val_loss=1.119553 val_acc=0.653633
+2026-09-18 20:38:23,474 | INFO | epoch=20 train_loss=0.924366 train_acc=0.652775 val_loss=1.000669 val_acc=0.664297
+2026-09-19 06:24:35,082 | INFO | epoch=21 train_loss=0.923416 train_acc=0.653846 val_loss=1.056520 val_acc=0.659558

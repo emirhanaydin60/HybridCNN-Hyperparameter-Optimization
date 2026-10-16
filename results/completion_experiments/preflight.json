@@ -1,0 +1,65 @@
+[
+  {
+    "dataset": "ISIC2019",
+    "model": "HybridCNN_GWO_Run1",
+    "class_count": 8,
+    "batch_size": 1,
+    "mixed_precision": true
+  },
+  {
+    "dataset": "ISIC2019",
+    "model": "HybridCNN_GWO_Run3",
+    "class_count": 8,
+    "batch_size": 1,
+    "mixed_precision": true
+  },
+  {
+    "dataset": "ISIC2019",
+    "model": "HybridCNN_WOA_Run3",
+    "class_count": 8,
+    "batch_size": 1,
+    "mixed_precision": true
+  },
+  {
+    "dataset": "BrainTumor",
+    "model": "HybridCNN_GWO_Run1",
+    "class_count": 4,
+    "batch_size": 1,
+    "mixed_precision": true
+  },
+  {
+    "dataset": "BrainTumor",
+    "model": "HybridCNN_GWO_Run3",
+    "class_count": 4,
+    "batch_size": 1,
+    "mixed_precision": true
+  },
+  {
+    "dataset": "BrainTumor",
+    "model": "HybridCNN_WOA_Run3",
+    "class_count": 4,
+    "batch_size": 1,
+    "mixed_precision": true
+  },
+  {
+    "dataset": "BrainTumor",
+    "model": "efficientnet-b0",
+    "class_count": 4,
+    "batch_size": 1,
+    "mixed_precision": true
+  },
+  {
+    "dataset": "BrainTumor",
+    "model": "mobilenetv3-large",
+    "class_count": 4,
+    "batch_size": 1,
+    "mixed_precision": true
+  },
+  {
+    "dataset": "BrainTumor",
+    "model": "shufflenetv2-1.5x",
+    "class_count": 4,
+    "batch_size": 1,
+    "mixed_precision": true
+  }
+]

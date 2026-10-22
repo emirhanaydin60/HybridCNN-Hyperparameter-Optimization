@@ -1,4 +1,5 @@
 {
   "experiment_id": "CIFAR10-efficientnet-b0-baseline-rerun",
-  "status": "running"
+  "status": "completed",
+  "best_epoch": 50
 }

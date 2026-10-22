@@ -1,0 +1,4 @@
+configuration,status,seed,data_split_seed,accuracy,macro_precision,macro_recall,macro_f1,balanced_accuracy,test_loss,best_validation_macro_f1,best_epoch,trainable_parameters,total_training_seconds,test_evaluation_seconds,run_directory,error
+HybridCNN_GWO_Run1,completed,42,42,0.8779,0.879783366859475,0.8779,0.8783299904601971,0.8779,0.8567455149918795,0.8801397996793192,44,7429418,11247.469755800004,16.236058099995716,results\cifar10_pipeline_rerun\runs\HybridCNN_GWO_Run1,
+HybridCNN_GWO_Run3,completed,42,44,0.8624,0.8654424739801725,0.8624,0.8633613774260921,0.8624,0.7243638006776572,0.8691561169353832,28,3239242,4706.643779699996,9.27206770000339,results\cifar10_pipeline_rerun\runs\HybridCNN_GWO_Run3,
+HybridCNN_WOA_Run3,completed,42,44,0.8753,0.876208647969742,0.8753,0.8754218393820903,0.8753,0.8416644681349397,0.8786454777535567,46,7411658,11253.215530100002,16.26041879999684,results\cifar10_pipeline_rerun\runs\HybridCNN_WOA_Run3,

@@ -1,0 +1,92 @@
+{
+  "dataset": "BrainTumor",
+  "status": "incomplete/resource-limited",
+  "training_process_active_at_record_time": false,
+  "isic2019_training_started": false,
+  "protocol": {
+    "epochs_requested": 50,
+    "validation_split": "stratified 90/10 from TRAIN",
+    "split_seed": 42,
+    "test_usage": "TEST reserved for final evaluation only",
+    "checkpoint_monitor": "val_macro_f1",
+    "micro_batch_size": 16,
+    "effective_batch_size": 32,
+    "gradient_accumulation_steps": 2,
+    "mixed_precision": true,
+    "image_size": 224
+  },
+  "estimated_training_time": {
+    "per_epoch_minutes_approx": 11,
+    "all_six_50_epochs_hours_approx": 55,
+    "additional_evaluation_time_included": false,
+    "basis": "Observed first epoch approximately 709 seconds at micro-batch 8 and 660 seconds at micro-batch 16."
+  },
+  "models": [
+    {
+      "model": "HybridCNN_GWO_Run1",
+      "status": "incomplete/resource-limited",
+      "completed_epochs_latest_attempt": 1,
+      "last_recorded_at": "2026-10-16T16:16:54",
+      "checkpoint_path": "results/brain_tumor_completion/HybridCNN_GWO_Run1/best_model.pth",
+      "checkpoint_contains": "model_weights_only",
+      "resume_possible": false,
+      "last_validation_accuracy": 0.710714,
+      "last_validation_macro_f1": 0.709297,
+      "remaining_work": "50-epoch completion and independent TEST evaluation"
+    },
+    {
+      "model": "HybridCNN_GWO_Run3",
+      "status": "incomplete/resource-limited",
+      "completed_epochs_latest_attempt": 0,
+      "last_recorded_at": null,
+      "checkpoint_path": null,
+      "checkpoint_contains": null,
+      "resume_possible": false,
+      "remaining_work": "50-epoch completion and independent TEST evaluation"
+    },
+    {
+      "model": "HybridCNN_WOA_Run3",
+      "status": "incomplete/resource-limited",
+      "completed_epochs_latest_attempt": 0,
+      "last_recorded_at": null,
+      "checkpoint_path": null,
+      "checkpoint_contains": null,
+      "resume_possible": false,
+      "remaining_work": "50-epoch completion and independent TEST evaluation"
+    },
+    {
+      "model": "efficientnet-b0",
+      "status": "incomplete/resource-limited",
+      "completed_epochs_latest_attempt": 0,
+      "last_recorded_at": null,
+      "checkpoint_path": null,
+      "checkpoint_contains": null,
+      "resume_possible": false,
+      "remaining_work": "Retrain with TRAIN-only validation and independent TEST evaluation"
+    },
+    {
+      "model": "mobilenetv3-large",
+      "status": "incomplete/resource-limited",
+      "completed_epochs_latest_attempt": 0,
+      "last_recorded_at": null,
+      "checkpoint_path": null,
+      "checkpoint_contains": null,
+      "resume_possible": false,
+      "remaining_work": "Retrain with TRAIN-only validation and independent TEST evaluation"
+    },
+    {
+      "model": "shufflenetv2-1.5x",
+      "status": "incomplete/resource-limited",
+      "completed_epochs_latest_attempt": 0,
+      "last_recorded_at": null,
+      "checkpoint_path": null,
+      "checkpoint_contains": null,
+      "resume_possible": false,
+      "remaining_work": "Retrain with TRAIN-only validation and independent TEST evaluation"
+    }
+  ],
+  "old_results_preserved": true,
+  "old_results_root": "results/final_experiments/BrainTumor",
+  "new_results_root": "results/brain_tumor_completion",
+  "report": "results/brain_tumor_completion/BT_STATUS_REPORT.md"
+}

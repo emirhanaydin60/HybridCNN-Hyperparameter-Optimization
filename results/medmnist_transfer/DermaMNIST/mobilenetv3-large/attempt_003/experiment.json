@@ -1,0 +1,5 @@
+{
+  "experiment_id": "DermaMNIST-mobilenetv3-large",
+  "status": "completed",
+  "best_epoch": 18
+}

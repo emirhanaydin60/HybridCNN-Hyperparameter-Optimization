@@ -1,0 +1,70 @@
+experiment_id: CIFAR10-shufflenetv2-1.5x-baseline-rerun
+dataset: CIFAR10
+model: shufflenetv2-1.5x
+num_classes: 10
+class_names:
+- airplane
+- automobile
+- bird
+- cat
+- deer
+- dog
+- frog
+- horse
+- ship
+- truck
+input_size:
+- 3
+- 224
+- 224
+resize:
+  size:
+  - 224
+  - 224
+  interpolation: bilinear
+grayscale_to_rgb: false
+normalization: none; bilinear Resize then ToTensor scales uint8 [0,255] to float32
+  [0,1]
+training:
+  optimizer: Adam
+  learning_rate: 0.001
+  weight_decay: 0.0
+  batch_size: 32
+  augmentation: none
+protocol:
+  max_epochs: 50
+  selection_metric: validation_macro_f1
+  early_stopping_patience: 10
+  scheduler:
+    name: ReduceLROnPlateau
+    monitor: validation_macro_f1
+    mode: max
+    factor: 0.5
+    patience: 4
+  seed: 42
+  mixed_precision: false
+  gradient_accumulation_steps: 1
+pretrained: false
+initialization: random; historical checkpoint used for provenance only
+historical_run:
+  status: SUCCESS
+  seed: 42
+  best_epoch: 14
+  trainable_parameters: 2488874
+  test_accuracy: 0.7086
+  macro_precision: 0.7109673408766588
+  macro_recall: 0.7085999999999999
+  macro_f1: 0.7091845629150175
+  balanced_accuracy: 0.7085999999999999
+  training_time_seconds: 1114.2218081000028
+  master_results_csv: results\final_experiments\master_results.csv
+  master_results_csv_sha256: 716253a67a049796323e25eaebadd28c19e109da07ece9c8b6ff69810318f83c
+  confusion_matrix_path: results\final_experiments\CIFAR10\shufflenetv2-1.5x\confusion_matrix.json
+  confusion_matrix_sha256: 7ed0691509a996c760bef02dd1c74afd34efc1ea1f8534592c0cbdd2b6365832
+  checkpoint_path: results\final_experiments\CIFAR10\shufflenetv2-1.5x\best_model.pth
+  checkpoint_sha256: b70e4e893efd6641d7ca8500a4499db2581d02d2dff0ba3acefb9f04502d5fa1
+  source_checkpoint_loaded: false
+architecture:
+  factory: torchvision via model_factory.create_model
+  num_classes: 10
+  pretrained: false

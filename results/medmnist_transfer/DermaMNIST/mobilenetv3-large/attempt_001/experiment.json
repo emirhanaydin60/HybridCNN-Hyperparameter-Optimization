@@ -1,0 +1,5 @@
+{
+  "experiment_id": "DermaMNIST-mobilenetv3-large",
+  "status": "incomplete",
+  "reason": "A previous invocation ended before completion."
+}

@@ -1,0 +1,155 @@
+{
+  "study": "MedMNIST transfer evaluation",
+  "medmnist_version": "3.0.2",
+  "datasets": {
+    "DermaMNIST": {
+      "medmnist_version": "3.0.2",
+      "source_url": "https://zenodo.org/records/10519652/files/dermamnist.npz?download=1",
+      "source_channels": 3,
+      "num_classes": 7,
+      "class_names": [
+        "actinic keratoses and intraepithelial carcinoma",
+        "basal cell carcinoma",
+        "benign keratosis-like lesions",
+        "dermatofibroma",
+        "melanoma",
+        "melanocytic nevi",
+        "vascular lesions"
+      ],
+      "split_counts": {
+        "train": 7007,
+        "val": 1003,
+        "test": 2005
+      },
+      "expected_split_counts": {
+        "train": 7007,
+        "val": 1003,
+        "test": 2005
+      },
+      "split_count_mismatches": {},
+      "source_resolution": 28,
+      "split_source": "official MedMNIST API"
+    },
+    "OrganSMNIST": {
+      "medmnist_version": "3.0.2",
+      "source_url": "https://zenodo.org/records/10519652/files/organsmnist.npz?download=1",
+      "source_channels": 1,
+      "num_classes": 11,
+      "class_names": [
+        "bladder",
+        "femur-left",
+        "femur-right",
+        "heart",
+        "kidney-left",
+        "kidney-right",
+        "liver",
+        "lung-left",
+        "lung-right",
+        "pancreas",
+        "spleen"
+      ],
+      "split_counts": {
+        "train": 13932,
+        "val": 2452,
+        "test": 8827
+      },
+      "expected_split_counts": {
+        "train": 13932,
+        "val": 2452,
+        "test": 8827
+      },
+      "split_count_mismatches": {},
+      "source_resolution": 28,
+      "split_source": "official MedMNIST API"
+    }
+  },
+  "models": [
+    "HybridCNN_GWO_Run1",
+    "HybridCNN_GWO_Run3",
+    "HybridCNN_WOA_Run3",
+    "efficientnet-b0",
+    "mobilenetv3-large",
+    "shufflenetv2-1.5x"
+  ],
+  "training_protocol": {
+    "max_epochs": 50,
+    "selection_metric": "validation_macro_f1",
+    "early_stopping_patience": 10,
+    "scheduler": {
+      "name": "ReduceLROnPlateau",
+      "monitor": "validation_macro_f1",
+      "mode": "max",
+      "factor": 0.5,
+      "patience": 4
+    },
+    "seed": 42,
+    "mixed_precision": false,
+    "gradient_accumulation_steps": 1
+  },
+  "source_runs": {
+    "HybridCNN_GWO_Run1": {
+      "hyperparameters": {
+        "shared_conv_kernel_size": 5,
+        "base_filters": 256,
+        "dilation": 1,
+        "final_neurons": 256,
+        "dropout": 0.17002009789608422,
+        "learning_rate": 0.0012351628680148583,
+        "batch_size": 32,
+        "se_ratio": 8
+      },
+      "source_summary": "results\\main_experiment\\GWO\\run_01\\summary.json",
+      "source_summary_sha256": "c022e5315f9c57d15b68e8349775c741d103d6955d774e76231d11930822ff91",
+      "source_checkpoint": "results\\main_experiment\\GWO\\run_01\\best_model.pth",
+      "source_checkpoint_sha256": "817cc848c01abbb6682464e4a15bf0abdb2bab4f350425b99eb322d60c35c18d",
+      "source_checkpoint_size_bytes": 29753205,
+      "source_run_seed": 42,
+      "source_parameter_count": 7429418,
+      "checkpoint_tensor_shapes_match": true,
+      "source_weights_loaded": false
+    },
+    "HybridCNN_GWO_Run3": {
+      "hyperparameters": {
+        "shared_conv_kernel_size": 3,
+        "base_filters": 256,
+        "dilation": 1,
+        "final_neurons": 256,
+        "dropout": 0.10853740995306956,
+        "learning_rate": 0.0014598678014005684,
+        "batch_size": 32,
+        "se_ratio": 4
+      },
+      "source_summary": "results\\main_experiment\\GWO\\run_03\\summary.json",
+      "source_summary_sha256": "d1bda63e376b5ed90ace31192d5be4db114e6e95fdc3aefaa0b7afe90bb2174f",
+      "source_checkpoint": "results\\main_experiment\\GWO\\run_03\\best_model.pth",
+      "source_checkpoint_sha256": "f9befc01d8bcda1ad2fc17b45dd39792dfc6c8d8a3b9aa44ebcb70f7dfb133b9",
+      "source_checkpoint_size_bytes": 12992501,
+      "source_run_seed": 44,
+      "source_parameter_count": 3239242,
+      "checkpoint_tensor_shapes_match": true,
+      "source_weights_loaded": false
+    },
+    "HybridCNN_WOA_Run3": {
+      "hyperparameters": {
+        "shared_conv_kernel_size": 5,
+        "base_filters": 256,
+        "dilation": 1,
+        "final_neurons": 128,
+        "dropout": 0.10077856418522159,
+        "learning_rate": 0.0014188144847256917,
+        "batch_size": 32,
+        "se_ratio": 4
+      },
+      "source_summary": "results\\main_experiment\\WOA\\run_03\\summary.json",
+      "source_summary_sha256": "86df2792e43dfa224406db90f3a8f8f038b7fd1e9522adc67619cca0fbad5fa9",
+      "source_checkpoint": "results\\main_experiment\\WOA\\run_03\\best_model.pth",
+      "source_checkpoint_sha256": "8c9ba25bc9b2501d03d671258fde544ddb0605abe71892eb33c432823cc33a8d",
+      "source_checkpoint_size_bytes": 29682165,
+      "source_run_seed": 44,
+      "source_parameter_count": 7411658,
+      "checkpoint_tensor_shapes_match": true,
+      "source_weights_loaded": false
+    }
+  },
+  "device": "cuda"
+}

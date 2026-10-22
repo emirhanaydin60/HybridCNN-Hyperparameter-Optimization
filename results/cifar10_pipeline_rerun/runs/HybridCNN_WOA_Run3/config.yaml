@@ -1,0 +1,115 @@
+experiment_id: CIFAR10-HybridCNN_WOA_Run3
+dataset: CIFAR10
+model: HybridCNN_WOA_Run3
+num_classes: 10
+class_names:
+- airplane
+- automobile
+- bird
+- cat
+- deer
+- dog
+- frog
+- horse
+- ship
+- truck
+input_size:
+- 3
+- 32
+- 32
+resize: none; CIFAR-10 images are already 32x32
+grayscale_to_rgb: false
+normalization: none; ToTensor scales uint8 [0,255] to float32 [0,1]
+training:
+  optimizer: Adam
+  learning_rate: 0.0014188144847256917
+  weight_decay: 0.0
+  batch_size: 32
+  augmentation: none
+  hyperparameters_source: results\main_experiment\WOA\run_03\summary.json
+protocol:
+  max_epochs: 50
+  selection_metric: validation_macro_f1
+  early_stopping_patience: 10
+  scheduler:
+    name: ReduceLROnPlateau
+    monitor: validation_macro_f1
+    mode: max
+    factor: 0.5
+    patience: 4
+  seed: 42
+  mixed_precision: false
+  gradient_accumulation_steps: 1
+data_split_seed: 44
+data_split:
+  source: torchvision.datasets.CIFAR10 official train/test splits
+  torchvision_version: 0.24.1+cu126
+  train_official_size: 50000
+  train_size: 45000
+  validation_size: 5000
+  test_size: 10000
+  split_seed: 44
+  train_indices_sha256: b6cd949c74b4b0c8f7f7fd1afd1fdbedd35b8864af53906f310b7c45bf5daad5
+  validation_indices_sha256: c501ef1d96a5863d5e4aa25501e5f94179379d512cd9aa58a202d671fc9e5d35
+  test_source: official CIFAR-10 test split; no overlap with train source
+  classes:
+  - airplane
+  - automobile
+  - bird
+  - cat
+  - deer
+  - dog
+  - frog
+  - horse
+  - ship
+  - truck
+  class_indices:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  transform: ToTensor only; no normalization or augmentation
+source_run:
+  hyperparameters:
+    shared_conv_kernel_size: 5
+    base_filters: 256
+    dilation: 1
+    final_neurons: 128
+    dropout: 0.10077856418522159
+    learning_rate: 0.0014188144847256917
+    batch_size: 32
+    se_ratio: 4
+  source_summary: results\main_experiment\WOA\run_03\summary.json
+  source_summary_sha256: 86df2792e43dfa224406db90f3a8f8f038b7fd1e9522adc67619cca0fbad5fa9
+  source_checkpoint: results\main_experiment\WOA\run_03\best_model.pth
+  source_checkpoint_sha256: 8c9ba25bc9b2501d03d671258fde544ddb0605abe71892eb33c432823cc33a8d
+  source_checkpoint_size_bytes: 29682165
+  source_run_seed: 44
+  source_parameter_count: 7411658
+  historical_test_metrics:
+    accuracy: 0.8768
+    macro_precision: 0.8765493488153309
+    macro_recall: 0.8768
+    macro_f1: 0.8765923414870995
+    best_validation_accuracy: 0.8154
+  checkpoint_tensor_shapes_match: true
+  source_weights_loaded: false
+pretrained: false
+initialization: random; source checkpoint used only for provenance and architecture
+  verification
+architecture:
+  in_channels: 3
+  img_size: 32
+  shared_conv_kernel_size: 5
+  base_filters: 256
+  dilation: 1
+  final_neurons: 128
+  dropout: 0.10077856418522159
+  se_ratio: 4
+  num_classes: 10

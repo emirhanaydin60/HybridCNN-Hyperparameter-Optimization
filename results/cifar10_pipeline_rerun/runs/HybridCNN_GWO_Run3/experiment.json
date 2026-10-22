@@ -1,0 +1,5 @@
+{
+  "experiment_id": "CIFAR10-HybridCNN_GWO_Run3",
+  "status": "completed",
+  "best_epoch": 28
+}

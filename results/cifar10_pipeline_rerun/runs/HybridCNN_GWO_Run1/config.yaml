@@ -1,0 +1,115 @@
+experiment_id: CIFAR10-HybridCNN_GWO_Run1
+dataset: CIFAR10
+model: HybridCNN_GWO_Run1
+num_classes: 10
+class_names:
+- airplane
+- automobile
+- bird
+- cat
+- deer
+- dog
+- frog
+- horse
+- ship
+- truck
+input_size:
+- 3
+- 32
+- 32
+resize: none; CIFAR-10 images are already 32x32
+grayscale_to_rgb: false
+normalization: none; ToTensor scales uint8 [0,255] to float32 [0,1]
+training:
+  optimizer: Adam
+  learning_rate: 0.0012351628680148583
+  weight_decay: 0.0
+  batch_size: 32
+  augmentation: none
+  hyperparameters_source: results\main_experiment\GWO\run_01\summary.json
+protocol:
+  max_epochs: 50
+  selection_metric: validation_macro_f1
+  early_stopping_patience: 10
+  scheduler:
+    name: ReduceLROnPlateau
+    monitor: validation_macro_f1
+    mode: max
+    factor: 0.5
+    patience: 4
+  seed: 42
+  mixed_precision: false
+  gradient_accumulation_steps: 1
+data_split_seed: 42
+data_split:
+  source: torchvision.datasets.CIFAR10 official train/test splits
+  torchvision_version: 0.24.1+cu126
+  train_official_size: 50000
+  train_size: 45000
+  validation_size: 5000
+  test_size: 10000
+  split_seed: 42
+  train_indices_sha256: cfc570de58f1a5e587aafe47b80b731037eb2faa98ba054d73982df7e9340ae3
+  validation_indices_sha256: afcef309c9f4c20a067dd275d7208d81fe01a1e505ff75da4409c461fa7f53fe
+  test_source: official CIFAR-10 test split; no overlap with train source
+  classes:
+  - airplane
+  - automobile
+  - bird
+  - cat
+  - deer
+  - dog
+  - frog
+  - horse
+  - ship
+  - truck
+  class_indices:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  transform: ToTensor only; no normalization or augmentation
+source_run:
+  hyperparameters:
+    shared_conv_kernel_size: 5
+    base_filters: 256
+    dilation: 1
+    final_neurons: 256
+    dropout: 0.17002009789608422
+    learning_rate: 0.0012351628680148583
+    batch_size: 32
+    se_ratio: 8
+  source_summary: results\main_experiment\GWO\run_01\summary.json
+  source_summary_sha256: c022e5315f9c57d15b68e8349775c741d103d6955d774e76231d11930822ff91
+  source_checkpoint: results\main_experiment\GWO\run_01\best_model.pth
+  source_checkpoint_sha256: 817cc848c01abbb6682464e4a15bf0abdb2bab4f350425b99eb322d60c35c18d
+  source_checkpoint_size_bytes: 29753205
+  source_run_seed: 42
+  source_parameter_count: 7429418
+  historical_test_metrics:
+    accuracy: 0.8793
+    macro_precision: 0.8791721991645319
+    macro_recall: 0.8793
+    macro_f1: 0.8788050887124388
+    best_validation_accuracy: 0.8046
+  checkpoint_tensor_shapes_match: true
+  source_weights_loaded: false
+pretrained: false
+initialization: random; source checkpoint used only for provenance and architecture
+  verification
+architecture:
+  in_channels: 3
+  img_size: 32
+  shared_conv_kernel_size: 5
+  base_filters: 256
+  dilation: 1
+  final_neurons: 256
+  dropout: 0.17002009789608422
+  se_ratio: 8
+  num_classes: 10

@@ -1,0 +1,55 @@
+experiment_id: OrganSMNIST-HybridCNN_GWO_Run3
+dataset: OrganSMNIST
+model: HybridCNN_GWO_Run3
+num_classes: 11
+input_size:
+- 3
+- 32
+- 32
+resize:
+  size:
+  - 32
+  - 32
+  interpolation: bilinear
+grayscale_to_rgb: true
+normalization: none; ToTensor scales uint8 [0,255] to float32 [0,1]
+training:
+  optimizer: Adam
+  learning_rate: 0.0014598678014005684
+  weight_decay: 0.0
+  batch_size: 32
+  augmentation: none
+  hyperparameters_source: results\main_experiment\GWO\run_03\summary.json
+protocol:
+  max_epochs: 50
+  selection_metric: validation_macro_f1
+  early_stopping_patience: 10
+  scheduler:
+    name: ReduceLROnPlateau
+    monitor: validation_macro_f1
+    mode: max
+    factor: 0.5
+    patience: 4
+  seed: 42
+  mixed_precision: false
+  gradient_accumulation_steps: 1
+source_run:
+  hyperparameters:
+    shared_conv_kernel_size: 3
+    base_filters: 256
+    dilation: 1
+    final_neurons: 256
+    dropout: 0.10853740995306956
+    learning_rate: 0.0014598678014005684
+    batch_size: 32
+    se_ratio: 4
+  source_summary: results\main_experiment\GWO\run_03\summary.json
+  source_summary_sha256: d1bda63e376b5ed90ace31192d5be4db114e6e95fdc3aefaa0b7afe90bb2174f
+  source_checkpoint: results\main_experiment\GWO\run_03\best_model.pth
+  source_checkpoint_sha256: f9befc01d8bcda1ad2fc17b45dd39792dfc6c8d8a3b9aa44ebcb70f7dfb133b9
+  source_checkpoint_size_bytes: 12992501
+  source_run_seed: 44
+  source_parameter_count: 3239242
+  checkpoint_tensor_shapes_match: true
+  source_weights_loaded: false
+pretrained: false

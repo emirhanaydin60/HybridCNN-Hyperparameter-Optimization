@@ -1,0 +1,61 @@
+{
+  "experiments": [
+    {
+      "configuration": "HybridCNN_GWO_Run1",
+      "status": "completed",
+      "seed": 42,
+      "data_split_seed": 42,
+      "accuracy": 0.8779,
+      "macro_precision": 0.879783366859475,
+      "macro_recall": 0.8779,
+      "macro_f1": 0.8783299904601971,
+      "balanced_accuracy": 0.8779,
+      "test_loss": 0.8567455149918795,
+      "best_validation_macro_f1": 0.8801397996793192,
+      "best_epoch": 44,
+      "trainable_parameters": 7429418,
+      "total_training_seconds": 11247.469755800004,
+      "test_evaluation_seconds": 16.236058099995716,
+      "run_directory": "results\\cifar10_pipeline_rerun\\runs\\HybridCNN_GWO_Run1",
+      "error": null
+    },
+    {
+      "configuration": "HybridCNN_GWO_Run3",
+      "status": "completed",
+      "seed": 42,
+      "data_split_seed": 44,
+      "accuracy": 0.8624,
+      "macro_precision": 0.8654424739801725,
+      "macro_recall": 0.8624,
+      "macro_f1": 0.8633613774260921,
+      "balanced_accuracy": 0.8624,
+      "test_loss": 0.7243638006776572,
+      "best_validation_macro_f1": 0.8691561169353832,
+      "best_epoch": 28,
+      "trainable_parameters": 3239242,
+      "total_training_seconds": 4706.643779699996,
+      "test_evaluation_seconds": 9.27206770000339,
+      "run_directory": "results\\cifar10_pipeline_rerun\\runs\\HybridCNN_GWO_Run3",
+      "error": null
+    },
+    {
+      "configuration": "HybridCNN_WOA_Run3",
+      "status": "completed",
+      "seed": 42,
+      "data_split_seed": 44,
+      "accuracy": 0.8753,
+      "macro_precision": 0.876208647969742,
+      "macro_recall": 0.8753,
+      "macro_f1": 0.8754218393820903,
+      "balanced_accuracy": 0.8753,
+      "test_loss": 0.8416644681349397,
+      "best_validation_macro_f1": 0.8786454777535567,
+      "best_epoch": 46,
+      "trainable_parameters": 7411658,
+      "total_training_seconds": 11253.215530100002,
+      "test_evaluation_seconds": 16.26041879999684,
+      "run_directory": "results\\cifar10_pipeline_rerun\\runs\\HybridCNN_WOA_Run3",
+      "error": null
+    }
+  ]
+}

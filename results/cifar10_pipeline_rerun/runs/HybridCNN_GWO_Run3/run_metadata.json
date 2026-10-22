@@ -1,0 +1,26 @@
+{
+  "seed": 42,
+  "data_split_seed": 44,
+  "source_run_seed": 44,
+  "status": "completed",
+  "device": "cuda",
+  "cuda_device_name": "NVIDIA GeForce RTX 3060",
+  "python_version": "3.14.2",
+  "torch_version": "2.9.1+cu126",
+  "torchvision_version": "0.24.1+cu126",
+  "numpy_version": "2.3.5",
+  "cudnn_deterministic": true,
+  "cudnn_benchmark": false,
+  "deterministic_algorithms": false,
+  "source_checkpoint_loaded": false,
+  "checkpoint_sha256": "06b3f471498ab21907eb1e69cc375ff4ae3e79038a7ef99c847f4416f2ca5e80",
+  "total_training_seconds": 4706.643779699996,
+  "test_evaluation_seconds": 9.27206770000339,
+  "historical_test_metrics": {
+    "accuracy": 0.8722,
+    "macro_precision": 0.872122381068972,
+    "macro_recall": 0.8722000000000001,
+    "macro_f1": 0.8719263021907931,
+    "best_validation_accuracy": 0.8168
+  }
+}

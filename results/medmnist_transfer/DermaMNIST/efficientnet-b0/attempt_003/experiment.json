@@ -1,0 +1,5 @@
+{
+  "experiment_id": "DermaMNIST-efficientnet-b0",
+  "status": "completed",
+  "best_epoch": 28
+}

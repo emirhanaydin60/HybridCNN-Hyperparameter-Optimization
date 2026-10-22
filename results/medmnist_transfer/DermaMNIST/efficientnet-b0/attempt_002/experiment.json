@@ -1,0 +1,5 @@
+{
+  "experiment_id": "DermaMNIST-efficientnet-b0",
+  "status": "incomplete",
+  "reason": "A previous invocation ended before completion."
+}

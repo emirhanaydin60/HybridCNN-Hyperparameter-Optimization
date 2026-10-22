@@ -1,0 +1,400 @@
+{
+  "checks": [
+    {
+      "status": "passed",
+      "dataset": "DermaMNIST",
+      "model": "HybridCNN_GWO_Run1",
+      "input_batch_shape": [
+        32,
+        3,
+        32,
+        32
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        2,
+        3,
+        4,
+        5
+      ],
+      "forward_output_shape": [
+        32,
+        7
+      ],
+      "smoke_loss": 1.882021188735962,
+      "parameter_count": 7428647,
+      "gpu_allocated_bytes": 138548224,
+      "gpu_peak_allocated_bytes": 632237056
+    },
+    {
+      "status": "passed",
+      "dataset": "DermaMNIST",
+      "model": "HybridCNN_GWO_Run3",
+      "input_batch_shape": [
+        32,
+        3,
+        32,
+        32
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        2,
+        3,
+        4,
+        5
+      ],
+      "forward_output_shape": [
+        32,
+        7
+      ],
+      "smoke_loss": 1.833970308303833,
+      "parameter_count": 3238471,
+      "gpu_allocated_bytes": 69932032,
+      "gpu_peak_allocated_bytes": 607153152
+    },
+    {
+      "status": "passed",
+      "dataset": "DermaMNIST",
+      "model": "HybridCNN_WOA_Run3",
+      "input_batch_shape": [
+        32,
+        3,
+        32,
+        32
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        2,
+        3,
+        4,
+        5
+      ],
+      "forward_output_shape": [
+        32,
+        7
+      ],
+      "smoke_loss": 1.9708573818206787,
+      "parameter_count": 7411271,
+      "gpu_allocated_bytes": 138269696,
+      "gpu_peak_allocated_bytes": 633015296
+    },
+    {
+      "status": "passed",
+      "dataset": "DermaMNIST",
+      "model": "efficientnet-b0",
+      "input_batch_shape": [
+        32,
+        3,
+        224,
+        224
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        2,
+        3,
+        4,
+        5
+      ],
+      "forward_output_shape": [
+        32,
+        7
+      ],
+      "smoke_loss": 1.924368143081665,
+      "parameter_count": 4016515,
+      "gpu_allocated_bytes": 83722240,
+      "gpu_peak_allocated_bytes": 2908331008
+    },
+    {
+      "status": "passed",
+      "dataset": "DermaMNIST",
+      "model": "mobilenetv3-large",
+      "input_batch_shape": [
+        32,
+        3,
+        224,
+        224
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        2,
+        3,
+        4,
+        5
+      ],
+      "forward_output_shape": [
+        32,
+        7
+      ],
+      "smoke_loss": 1.9505324363708496,
+      "parameter_count": 4210999,
+      "gpu_allocated_bytes": 85748224,
+      "gpu_peak_allocated_bytes": 1479697920
+    },
+    {
+      "status": "passed",
+      "dataset": "DermaMNIST",
+      "model": "shufflenetv2-1.5x",
+      "input_batch_shape": [
+        32,
+        3,
+        224,
+        224
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        2,
+        3,
+        4,
+        5
+      ],
+      "forward_output_shape": [
+        32,
+        7
+      ],
+      "smoke_loss": 1.8943605422973633,
+      "parameter_count": 2485799,
+      "gpu_allocated_bytes": 60017152,
+      "gpu_peak_allocated_bytes": 961569280
+    },
+    {
+      "status": "passed",
+      "dataset": "OrganSMNIST",
+      "model": "HybridCNN_GWO_Run1",
+      "input_batch_shape": [
+        32,
+        3,
+        32,
+        32
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "forward_output_shape": [
+        32,
+        11
+      ],
+      "smoke_loss": 2.401566982269287,
+      "parameter_count": 7429675,
+      "gpu_allocated_bytes": 138565120,
+      "gpu_peak_allocated_bytes": 633163264
+    },
+    {
+      "status": "passed",
+      "dataset": "OrganSMNIST",
+      "model": "HybridCNN_GWO_Run3",
+      "input_batch_shape": [
+        32,
+        3,
+        32,
+        32
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "forward_output_shape": [
+        32,
+        11
+      ],
+      "smoke_loss": 2.4532337188720703,
+      "parameter_count": 3239499,
+      "gpu_allocated_bytes": 69948928,
+      "gpu_peak_allocated_bytes": 607161856
+    },
+    {
+      "status": "passed",
+      "dataset": "OrganSMNIST",
+      "model": "HybridCNN_WOA_Run3",
+      "input_batch_shape": [
+        32,
+        3,
+        32,
+        32
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "forward_output_shape": [
+        32,
+        11
+      ],
+      "smoke_loss": 2.380401134490967,
+      "parameter_count": 7411787,
+      "gpu_allocated_bytes": 138278400,
+      "gpu_peak_allocated_bytes": 633019904
+    },
+    {
+      "status": "passed",
+      "dataset": "OrganSMNIST",
+      "model": "efficientnet-b0",
+      "input_batch_shape": [
+        32,
+        3,
+        224,
+        224
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "forward_output_shape": [
+        32,
+        11
+      ],
+      "smoke_loss": 2.4258298873901367,
+      "parameter_count": 4021639,
+      "gpu_allocated_bytes": 83804672,
+      "gpu_peak_allocated_bytes": 2908372480
+    },
+    {
+      "status": "passed",
+      "dataset": "OrganSMNIST",
+      "model": "mobilenetv3-large",
+      "input_batch_shape": [
+        32,
+        3,
+        224,
+        224
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "forward_output_shape": [
+        32,
+        11
+      ],
+      "smoke_loss": 2.4020161628723145,
+      "parameter_count": 4216123,
+      "gpu_allocated_bytes": 85830656,
+      "gpu_peak_allocated_bytes": 1479739392
+    },
+    {
+      "status": "passed",
+      "dataset": "OrganSMNIST",
+      "model": "shufflenetv2-1.5x",
+      "input_batch_shape": [
+        32,
+        3,
+        224,
+        224
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "forward_output_shape": [
+        32,
+        11
+      ],
+      "smoke_loss": 2.3709864616394043,
+      "parameter_count": 2489899,
+      "gpu_allocated_bytes": 60083200,
+      "gpu_peak_allocated_bytes": 961602560
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+experiment_id: CIFAR10-efficientnet-b0-baseline-rerun
+dataset: CIFAR10
+model: efficientnet-b0
+num_classes: 10
+class_names:
+- airplane
+- automobile
+- bird
+- cat
+- deer
+- dog
+- frog
+- horse
+- ship
+- truck
+input_size:
+- 3
+- 224
+- 224
+resize:
+  size:
+  - 224
+  - 224
+  interpolation: bilinear
+grayscale_to_rgb: false
+normalization: none; bilinear Resize then ToTensor scales uint8 [0,255] to float32
+  [0,1]
+training:
+  optimizer: Adam
+  learning_rate: 0.001
+  weight_decay: 0.0
+  batch_size: 32
+  augmentation: none
+protocol:
+  max_epochs: 50
+  selection_metric: validation_macro_f1
+  early_stopping_patience: 10
+  scheduler:
+    name: ReduceLROnPlateau
+    monitor: validation_macro_f1
+    mode: max
+    factor: 0.5
+    patience: 4
+  seed: 42
+  mixed_precision: false
+  gradient_accumulation_steps: 1
+pretrained: false
+initialization: random; historical checkpoint used for provenance only
+historical_run:
+  status: SUCCESS
+  seed: 42
+  best_epoch: 48
+  trainable_parameters: 4020358
+  test_accuracy: 0.7345
+  macro_precision: 0.7352077404630547
+  macro_recall: 0.7344999999999999
+  macro_f1: 0.7338634720695242
+  balanced_accuracy: 0.7344999999999999
+  training_time_seconds: 2949.925302799995
+  master_results_csv: results\final_experiments\master_results.csv
+  master_results_csv_sha256: 716253a67a049796323e25eaebadd28c19e109da07ece9c8b6ff69810318f83c
+  confusion_matrix_path: results\final_experiments\CIFAR10\efficientnet-b0\confusion_matrix.json
+  confusion_matrix_sha256: 512e65464741cd3bcfb9bdea6798cabddf66dc891199bf9aa633026cbf952957
+  checkpoint_path: results\final_experiments\CIFAR10\efficientnet-b0\best_model.pth
+  checkpoint_sha256: 483ac8d41f8be2a28dc474136fb382e4c426e529a867436a5ccccaf5bf589000
+  source_checkpoint_loaded: false
+architecture:
+  factory: torchvision via model_factory.create_model
+  num_classes: 10
+  pretrained: false

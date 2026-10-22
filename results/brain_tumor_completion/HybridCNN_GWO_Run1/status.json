@@ -1,0 +1,27 @@
+{
+  "dataset": "BrainTumor",
+  "model": "HybridCNN_GWO_Run1",
+  "experiment_id": "BrainTumor/HybridCNN_GWO_Run1/seed42-micro16",
+  "status": "incomplete/resource-limited",
+  "training_status": "incomplete",
+  "completed_epochs_latest_attempt": 1,
+  "last_recorded_at": "2026-10-16T16:16:54",
+  "checkpoint_path": "results/brain_tumor_completion/HybridCNN_GWO_Run1/best_model.pth",
+  "checkpoint_contains": "model_weights_only",
+  "resume_from_checkpoint": false,
+  "optimizer_state_path": null,
+  "scheduler_state_path": null,
+  "random_seed": 42,
+  "split": "stratified 90/10 split from TRAIN; TEST untouched",
+  "micro_batch_size": 16,
+  "effective_batch_size": 32,
+  "gradient_accumulation_steps": 2,
+  "mixed_precision": true,
+  "checkpoint_monitor": "val_macro_f1",
+  "last_validation": {
+    "accuracy": 0.710714,
+    "macro_f1": 0.709297
+  },
+  "remaining_work": "Complete the unchanged 50-epoch protocol, select checkpoint by validation Macro-F1, then evaluate TEST once.",
+  "notes": "Two exploratory attempts were made; only the latest attempt is represented by the checkpoint path. The partial checkpoint is not a final result."
+}

@@ -1,0 +1,70 @@
+experiment_id: CIFAR10-mobilenetv3-large-baseline-rerun
+dataset: CIFAR10
+model: mobilenetv3-large
+num_classes: 10
+class_names:
+- airplane
+- automobile
+- bird
+- cat
+- deer
+- dog
+- frog
+- horse
+- ship
+- truck
+input_size:
+- 3
+- 224
+- 224
+resize:
+  size:
+  - 224
+  - 224
+  interpolation: bilinear
+grayscale_to_rgb: false
+normalization: none; bilinear Resize then ToTensor scales uint8 [0,255] to float32
+  [0,1]
+training:
+  optimizer: Adam
+  learning_rate: 0.001
+  weight_decay: 0.0
+  batch_size: 32
+  augmentation: none
+protocol:
+  max_epochs: 50
+  selection_metric: validation_macro_f1
+  early_stopping_patience: 10
+  scheduler:
+    name: ReduceLROnPlateau
+    monitor: validation_macro_f1
+    mode: max
+    factor: 0.5
+    patience: 4
+  seed: 42
+  mixed_precision: false
+  gradient_accumulation_steps: 1
+pretrained: false
+initialization: random; historical checkpoint used for provenance only
+historical_run:
+  status: SUCCESS
+  seed: 42
+  best_epoch: 38
+  trainable_parameters: 4214842
+  test_accuracy: 0.5556
+  macro_precision: 0.5586745419539931
+  macro_recall: 0.5556000000000001
+  macro_f1: 0.5539995759119026
+  balanced_accuracy: 0.5556000000000001
+  training_time_seconds: 2263.4574673000025
+  master_results_csv: results\final_experiments\master_results.csv
+  master_results_csv_sha256: 716253a67a049796323e25eaebadd28c19e109da07ece9c8b6ff69810318f83c
+  confusion_matrix_path: results\final_experiments\CIFAR10\mobilenetv3-large\confusion_matrix.json
+  confusion_matrix_sha256: acd40ccaade4abf55ec56f68dd4ecf570ded9b39c98c04fd90e9dbc2aabd19c8
+  checkpoint_path: results\final_experiments\CIFAR10\mobilenetv3-large\best_model.pth
+  checkpoint_sha256: b90fc51983f73df651f0cdd615201a1fe887b1c7042e7e517a903d893c3061fe
+  source_checkpoint_loaded: false
+architecture:
+  factory: torchvision via model_factory.create_model
+  num_classes: 10
+  pretrained: false

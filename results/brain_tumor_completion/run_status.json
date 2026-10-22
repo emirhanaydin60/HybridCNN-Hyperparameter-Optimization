@@ -1,0 +1,25 @@
+{
+  "dataset": "BrainTumor",
+  "status": "INCOMPLETE_RESOURCE_LIMIT",
+  "models_completed": 0,
+  "models_finally_evaluated": 0,
+  "isic2019_started": false,
+  "partial_checkpoints_are_final": false,
+  "protocol": {
+    "train_validation_split": "90/10 stratified split from TRAIN",
+    "test_usage": "untouched until final evaluation",
+    "checkpoint_monitor": "val_macro_f1",
+    "seed": 42,
+    "image_size": 224,
+    "mixed_precision": true,
+    "effective_batch_size": 32
+  },
+  "observations": {
+    "hybrid_gwo_run1_batch8_epoch1_seconds": 709,
+    "hybrid_gwo_run1_batch16_epoch1_seconds": 660,
+    "hybrid_gwo_run1_batch8_epoch1_val_macro_f1": 0.575151,
+    "hybrid_gwo_run1_batch16_epoch1_val_macro_f1": 0.709297
+  },
+  "reason": "The unchanged 50-epoch protocol is multi-hour per model on the available RTX 3060. The run was stopped before final evaluation rather than silently changing the scientific protocol.",
+  "report": "results/brain_tumor_completion/BT_RUN_STATUS.md"
+}

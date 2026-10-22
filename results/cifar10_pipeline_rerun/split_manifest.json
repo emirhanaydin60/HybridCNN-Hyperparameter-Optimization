@@ -1,0 +1,113 @@
+{
+  "HybridCNN_GWO_Run1": {
+    "source": "torchvision.datasets.CIFAR10 official train/test splits",
+    "torchvision_version": "0.24.1+cu126",
+    "train_official_size": 50000,
+    "train_size": 45000,
+    "validation_size": 5000,
+    "test_size": 10000,
+    "split_seed": 42,
+    "train_indices_sha256": "cfc570de58f1a5e587aafe47b80b731037eb2faa98ba054d73982df7e9340ae3",
+    "validation_indices_sha256": "afcef309c9f4c20a067dd275d7208d81fe01a1e505ff75da4409c461fa7f53fe",
+    "test_source": "official CIFAR-10 test split; no overlap with train source",
+    "classes": [
+      "airplane",
+      "automobile",
+      "bird",
+      "cat",
+      "deer",
+      "dog",
+      "frog",
+      "horse",
+      "ship",
+      "truck"
+    ],
+    "class_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "transform": "ToTensor only; no normalization or augmentation"
+  },
+  "HybridCNN_GWO_Run3": {
+    "source": "torchvision.datasets.CIFAR10 official train/test splits",
+    "torchvision_version": "0.24.1+cu126",
+    "train_official_size": 50000,
+    "train_size": 45000,
+    "validation_size": 5000,
+    "test_size": 10000,
+    "split_seed": 44,
+    "train_indices_sha256": "b6cd949c74b4b0c8f7f7fd1afd1fdbedd35b8864af53906f310b7c45bf5daad5",
+    "validation_indices_sha256": "c501ef1d96a5863d5e4aa25501e5f94179379d512cd9aa58a202d671fc9e5d35",
+    "test_source": "official CIFAR-10 test split; no overlap with train source",
+    "classes": [
+      "airplane",
+      "automobile",
+      "bird",
+      "cat",
+      "deer",
+      "dog",
+      "frog",
+      "horse",
+      "ship",
+      "truck"
+    ],
+    "class_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "transform": "ToTensor only; no normalization or augmentation"
+  },
+  "HybridCNN_WOA_Run3": {
+    "source": "torchvision.datasets.CIFAR10 official train/test splits",
+    "torchvision_version": "0.24.1+cu126",
+    "train_official_size": 50000,
+    "train_size": 45000,
+    "validation_size": 5000,
+    "test_size": 10000,
+    "split_seed": 44,
+    "train_indices_sha256": "b6cd949c74b4b0c8f7f7fd1afd1fdbedd35b8864af53906f310b7c45bf5daad5",
+    "validation_indices_sha256": "c501ef1d96a5863d5e4aa25501e5f94179379d512cd9aa58a202d671fc9e5d35",
+    "test_source": "official CIFAR-10 test split; no overlap with train source",
+    "classes": [
+      "airplane",
+      "automobile",
+      "bird",
+      "cat",
+      "deer",
+      "dog",
+      "frog",
+      "horse",
+      "ship",
+      "truck"
+    ],
+    "class_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "transform": "ToTensor only; no normalization or augmentation"
+  }
+}

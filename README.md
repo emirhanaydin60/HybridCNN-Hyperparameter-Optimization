@@ -211,3 +211,25 @@ Bu nedenle deneyler yeniden üretilebilir olacak şekilde tasarlanmıştır; anc
 - `analyze_results.py` artık ana akışta kullanılmaz; final analiz `train.py` tarafından otomatik yürütülür.
 - `finalize_results.py` ve `gwo.py` depo içinde legacy uyumluluk dosyalarıdır.
 - `results/` altındaki eski çıktılar korunabilir; yeni koşular mevcut run’ları ezmez.
+
+## MedMNIST Transfer Experiments
+
+The separate MedMNIST runner evaluates the three CIFAR-10-selected HybridCNN
+configurations and three randomly initialized torchvision baselines on the
+official DermaMNIST and OrganSMNIST splits. It does not alter the original
+optimizer/search workflow.
+
+```bash
+python scripts/run_medmnist_transfer.py --smoke-only
+python scripts/run_medmnist_transfer.py
+```
+
+The smoke-only command verifies official split sizes, labels, input tensor
+shapes, forward/backward, optimizer steps, and (when available) GPU memory
+before any full training. Full runs use at most 50 epochs and validation
+macro-F1 for checkpoint selection, scheduling, and early stopping. HybridCNN
+inputs are resized to 32x32; torchvision baseline inputs are resized to
+224x224. Results and per-attempt logs/checkpoints are kept under
+`results/medmnist_transfer/`; a later attempt does not overwrite a prior
+attempt's files. The generated report explicitly documents this resolution
+difference and does not interpret results as state-of-the-art evidence.

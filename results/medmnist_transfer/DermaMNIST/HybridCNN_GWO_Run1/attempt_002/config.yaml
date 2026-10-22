@@ -1,0 +1,55 @@
+experiment_id: DermaMNIST-HybridCNN_GWO_Run1
+dataset: DermaMNIST
+model: HybridCNN_GWO_Run1
+num_classes: 7
+input_size:
+- 3
+- 32
+- 32
+resize:
+  size:
+  - 32
+  - 32
+  interpolation: bilinear
+grayscale_to_rgb: false
+normalization: none; ToTensor scales uint8 [0,255] to float32 [0,1]
+training:
+  optimizer: Adam
+  learning_rate: 0.0012351628680148583
+  weight_decay: 0.0
+  batch_size: 32
+  augmentation: none
+  hyperparameters_source: results\main_experiment\GWO\run_01\summary.json
+protocol:
+  max_epochs: 50
+  selection_metric: validation_macro_f1
+  early_stopping_patience: 10
+  scheduler:
+    name: ReduceLROnPlateau
+    monitor: validation_macro_f1
+    mode: max
+    factor: 0.5
+    patience: 4
+  seed: 42
+  mixed_precision: false
+  gradient_accumulation_steps: 1
+source_run:
+  hyperparameters:
+    shared_conv_kernel_size: 5
+    base_filters: 256
+    dilation: 1
+    final_neurons: 256
+    dropout: 0.17002009789608422
+    learning_rate: 0.0012351628680148583
+    batch_size: 32
+    se_ratio: 8
+  source_summary: results\main_experiment\GWO\run_01\summary.json
+  source_summary_sha256: c022e5315f9c57d15b68e8349775c741d103d6955d774e76231d11930822ff91
+  source_checkpoint: results\main_experiment\GWO\run_01\best_model.pth
+  source_checkpoint_sha256: 817cc848c01abbb6682464e4a15bf0abdb2bab4f350425b99eb322d60c35c18d
+  source_checkpoint_size_bytes: 29753205
+  source_run_seed: 42
+  source_parameter_count: 7429418
+  checkpoint_tensor_shapes_match: true
+  source_weights_loaded: false
+pretrained: false

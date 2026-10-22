@@ -1,0 +1,143 @@
+{
+  "checks": [
+    {
+      "status": "passed",
+      "dataset": "CIFAR10",
+      "model": "HybridCNN_GWO_Run1",
+      "input_batch_shape": [
+        32,
+        3,
+        32,
+        32
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "forward_output_shape": [
+        32,
+        10
+      ],
+      "smoke_loss": 2.337345600128174,
+      "parameter_count": 7429418,
+      "gpu_allocated_bytes": 138561024,
+      "gpu_peak_allocated_bytes": 632243712,
+      "class_names": [
+        "airplane",
+        "automobile",
+        "bird",
+        "cat",
+        "deer",
+        "dog",
+        "frog",
+        "horse",
+        "ship",
+        "truck"
+      ]
+    },
+    {
+      "status": "passed",
+      "dataset": "CIFAR10",
+      "model": "HybridCNN_GWO_Run3",
+      "input_batch_shape": [
+        32,
+        3,
+        32,
+        32
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "forward_output_shape": [
+        32,
+        10
+      ],
+      "smoke_loss": 2.316952705383301,
+      "parameter_count": 3239242,
+      "gpu_allocated_bytes": 69944832,
+      "gpu_peak_allocated_bytes": 607159808,
+      "class_names": [
+        "airplane",
+        "automobile",
+        "bird",
+        "cat",
+        "deer",
+        "dog",
+        "frog",
+        "horse",
+        "ship",
+        "truck"
+      ]
+    },
+    {
+      "status": "passed",
+      "dataset": "CIFAR10",
+      "model": "HybridCNN_WOA_Run3",
+      "input_batch_shape": [
+        32,
+        3,
+        32,
+        32
+      ],
+      "input_dtype": "torch.float32",
+      "input_min": 0.0,
+      "input_max": 1.0,
+      "label_dtype": "torch.int64",
+      "label_indices_in_batch": [
+        0,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "forward_output_shape": [
+        32,
+        10
+      ],
+      "smoke_loss": 2.3123250007629395,
+      "parameter_count": 7411658,
+      "gpu_allocated_bytes": 138276352,
+      "gpu_peak_allocated_bytes": 633018880,
+      "class_names": [
+        "airplane",
+        "automobile",
+        "bird",
+        "cat",
+        "deer",
+        "dog",
+        "frog",
+        "horse",
+        "ship",
+        "truck"
+      ]
+    }
+  ]
+}

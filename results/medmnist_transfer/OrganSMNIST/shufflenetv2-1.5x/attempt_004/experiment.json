@@ -1,0 +1,5 @@
+{
+  "experiment_id": "OrganSMNIST-shufflenetv2-1.5x",
+  "status": "completed",
+  "best_epoch": 12
+}

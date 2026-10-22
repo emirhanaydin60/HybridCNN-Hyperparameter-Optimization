@@ -27,3 +27,7 @@
 2026-10-22 09:59:05,793 | INFO | epoch=27 train_loss=0.021823 train_acc=0.992800 train_macro_f1=0.992801 val_loss=0.498368 val_acc=0.900000 val_macro_f1=0.899280
 2026-10-22 10:02:21,895 | INFO | epoch=28 train_loss=0.019856 train_acc=0.993422 train_macro_f1=0.993424 val_loss=0.539587 val_acc=0.899000 val_macro_f1=0.898524
 2026-10-22 10:05:48,308 | INFO | epoch=29 train_loss=0.022500 train_acc=0.992400 train_macro_f1=0.992401 val_loss=0.541595 val_acc=0.894000 val_macro_f1=0.893876
+2026-10-22 10:09:17,688 | INFO | epoch=30 train_loss=0.020861 train_acc=0.992356 train_macro_f1=0.992358 val_loss=0.514076 val_acc=0.899400 val_macro_f1=0.898587
+2026-10-22 10:12:44,741 | INFO | epoch=31 train_loss=0.021147 train_acc=0.993267 train_macro_f1=0.993270 val_loss=0.516784 val_acc=0.898800 val_macro_f1=0.898604
+2026-10-22 10:16:11,737 | INFO | epoch=32 train_loss=0.008714 train_acc=0.997200 train_macro_f1=0.997201 val_loss=0.478523 val_acc=0.909400 val_macro_f1=0.909150
+2026-10-22 10:19:38,534 | INFO | epoch=33 train_loss=0.005153 train_acc=0.998356 train_macro_f1=0.998356 val_loss=0.540324 val_acc=0.904800 val_macro_f1=0.904145

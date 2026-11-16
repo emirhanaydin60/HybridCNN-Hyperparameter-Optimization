@@ -75,10 +75,11 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
         if self.logger is not None:
             getattr(self.logger, level)(message, *args)
 
-    def _mutate_dimension(self, position, dimension):
+    def _mutate_dimension(self, position, dimension, excluded_values=None):
         candidate = position.copy()
         lower, upper = self.bounds[dimension]
         spec = self.dimension_specs[dimension]
+        excluded_values = excluded_values or set()
 
         if spec["kind"] == "categorical":
             values = spec.get("values")
@@ -86,7 +87,9 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
                 return None
             current_index = int(round(position[dimension]))
             alternatives = [
-                index for index in range(len(values)) if index != current_index
+                index
+                for index in range(len(values))
+                if index != current_index and index not in excluded_values
             ]
             if not alternatives:
                 return None
@@ -103,19 +106,23 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
         for _ in range(16):
             step = float(self.random_state.normal(0.0, width * 0.1))
             value = float(np.clip(current + step, lower, upper))
-            if value != current:
+            if value != current and value not in excluded_values:
                 candidate[dimension] = value
                 return self._clip(candidate)
 
-        value = float(self.random_state.uniform(lower, upper))
-        if value == current:
-            value = lower if current != lower else upper
-        candidate[dimension] = value
-        return self._clip(candidate)
+        for _ in range(16):
+            value = float(self.random_state.uniform(lower, upper))
+            if value != current and value not in excluded_values:
+                candidate[dimension] = value
+                return self._clip(candidate)
+        return None
 
-    def _best_dimension(self, global_best):
+    def _best_dimension(self, global_best, excluded_dimensions=None):
+        excluded_dimensions = excluded_dimensions or set()
         eligible = []
         for index, spec in enumerate(self.dimension_specs):
+            if index in excluded_dimensions:
+                continue
             if spec["kind"] == "continuous":
                 lower, upper = self.bounds[index]
                 if upper > lower:
@@ -190,6 +197,7 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
         improvements = 0
         missing = 0
         attempts_without_progress = 0
+        exhausted_dimensions = set()
         max_total_attempts = self.population * self.retry_limit * max(self.dim, 1)
 
         while successful_evaluations < self.population:
@@ -205,7 +213,7 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
                 )
                 break
 
-            dimension = self._best_dimension(best_position)
+            dimension = self._best_dimension(best_position, exhausted_dimensions)
             if dimension is None:
                 missing = self.population - successful_evaluations
                 self._log(
@@ -217,29 +225,35 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
                 )
                 break
 
-            retries_on_dimension = 0
-            while retries_on_dimension < self.retry_limit:
+            tried_values = set()
+            found_unique = False
+            dimension_exhausted = False
+            for _ in range(self.retry_limit):
                 base_position = best_position.copy()
                 previous_fitness = best_fitness
-                candidate = self._mutate_dimension(base_position, dimension)
+                candidate = self._mutate_dimension(
+                    base_position, dimension, excluded_values=tried_values
+                )
                 attempts_without_progress += 1
-                retries_on_dimension += 1
-                if candidate is None or np.array_equal(candidate, base_position):
-                    if candidate is not None:
-                        self._record_attempt(
-                            history,
-                            iteration,
-                            successful_evaluations + 1,
-                            dimension,
-                            base_position,
-                            candidate,
-                            previous_fitness,
-                            None,
-                            False,
-                            "duplicate_candidate_retry",
-                            best_position,
-                            best_fitness,
-                        )
+                if candidate is None:
+                    dimension_exhausted = True
+                    break
+                tried_values.add(float(candidate[dimension]))
+                if np.array_equal(candidate, base_position):
+                    self._record_attempt(
+                        history,
+                        iteration,
+                        successful_evaluations + 1,
+                        dimension,
+                        base_position,
+                        candidate,
+                        previous_fitness,
+                        None,
+                        False,
+                        "duplicate_candidate_retry",
+                        best_position,
+                        best_fitness,
+                    )
                     continue
 
                 cached = self._is_cached(candidate)
@@ -301,6 +315,7 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
                     best_fitness = float(candidate_fitness)
                     improvements += 1
                     status = "improved"
+                    exhausted_dimensions.clear()
                 self._record_attempt(
                     history,
                     iteration,
@@ -315,8 +330,12 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
                     best_position,
                     best_fitness,
                 )
+                found_unique = True
                 break
-            else:
+            if dimension_exhausted:
+                exhausted_dimensions.add(dimension)
+            elif not found_unique:
+                exhausted_dimensions.add(dimension)
                 self._log(
                     "warning",
                     "IGWO local search could not find a unique value for "

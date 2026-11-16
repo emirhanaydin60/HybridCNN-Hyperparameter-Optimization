@@ -2,9 +2,12 @@ import argparse
 import csv
 import hashlib
 import json
+import msvcrt
 import platform
 import subprocess
 import sys
+import time
+from contextlib import contextmanager
 from pathlib import Path
 
 import matplotlib
@@ -26,8 +29,10 @@ from utils import setup_logging, write_json
 
 DEFAULT_CONFIG = ROOT / "results" / "main_experiment" / "config_used.json"
 DEFAULT_GWO_RUNS = ROOT / "results" / "main_experiment" / "GWO"
-DEFAULT_STUDY_ROOT = ROOT / "results"
+DEFAULT_STUDY_ROOT = ROOT / "results" / "igwo_comparison" / "paper_config_6x10"
 DEFAULT_SEED = 42
+IGWO_POPULATION_SIZE = 6
+IGWO_ITERATION_COUNT = 10
 MATCHED_CONFIG_KEYS = (
     "dataset",
     "model_name",
@@ -125,7 +130,9 @@ def _reconstruct_gwo_initial_population(config, seed):
     return optimizer._initialize().tolist()
 
 
-def _check_igwo_run(study_dir, summary, expected_initial_positions, seed):
+def _check_igwo_run(
+    study_dir, summary, expected_initial_positions, seed, evaluation_budget
+):
     if summary["run_seed"] != seed:
         raise AssertionError(f"IGWO run did not use seed {seed}")
     if summary["initial_population_positions"] != expected_initial_positions:
@@ -135,10 +142,29 @@ def _check_igwo_run(study_dir, summary, expected_initial_positions, seed):
         )
     if len(summary["convergence_history"]) != summary["config"]["iteration_count"]:
         raise AssertionError("IGWO did not complete all configured iterations")
+    if summary["config"]["population_size"] != IGWO_POPULATION_SIZE:
+        raise AssertionError("IGWO population size differs from the paper protocol")
+    if summary["config"]["iteration_count"] != IGWO_ITERATION_COUNT:
+        raise AssertionError("IGWO iteration count differs from the paper protocol")
     if summary["unique_fitness_evaluations"] != summary["optimizer_state"][
         "cache_misses"
     ]:
         raise AssertionError("IGWO unique fitness count does not match cache misses")
+    if summary["optimizer_state"]["evaluation_budget"] != evaluation_budget:
+        raise AssertionError("IGWO evaluation budget differs from its GWO reference")
+    if summary["unique_fitness_evaluations"] > evaluation_budget:
+        raise AssertionError("IGWO exceeded the unique-training budget")
+    if summary["local_search_evaluation_count"] > (
+        IGWO_POPULATION_SIZE * IGWO_ITERATION_COUNT
+    ):
+        raise AssertionError("IGWO local search exceeded its population-sized budget")
+    trace_path = study_dir / "CIFAR10" / "IGWO" / "run_01" / "igwo_trace.json"
+    trace = _read_json(trace_path)
+    local_counts = trace["local_search_evaluations_by_iteration"]
+    if any(count > IGWO_POPULATION_SIZE for count in local_counts):
+        raise AssertionError("A local-search iteration exceeded the IGWO population")
+    if sum(local_counts) != summary["local_search_evaluation_count"]:
+        raise AssertionError("IGWO local-search trace count does not match its summary")
 
     confusion_path = study_dir / "CIFAR10" / "IGWO" / "run_01" / "confusion_matrix.json"
     confusion = _read_json(confusion_path)
@@ -169,23 +195,40 @@ def _check_igwo_run(study_dir, summary, expected_initial_positions, seed):
         raise AssertionError("IGWO balanced accuracy differs from macro-recall")
 
 
-def _future_seed_statuses(current_seed):
-    statuses = {}
-    for seed in (42, 43, 44):
-        if seed == current_seed:
-            continue
-        prior_manifest = (
-            DEFAULT_STUDY_ROOT
-            / f"igwo_existing_gwo_seed{seed}"
-            / "study_manifest.json"
-        )
-        if prior_manifest.is_file():
-            saved = _read_json(prior_manifest)
-            if saved.get("status") == "completed":
-                statuses[str(seed)] = "completed"
-                continue
-        statuses[str(seed)] = "planned_not_started"
-    return statuses
+def _other_seed_runs(current_seed):
+    return {
+        str(seed): "separate_run"
+        for seed in (42, 43, 44)
+        if seed != current_seed
+    }
+
+
+@contextmanager
+def _exclusive_gpu_lock(lock_path, logger):
+    if lock_path is None:
+        yield
+        return
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    with lock_path.open("a+b") as lock_file:
+        lock_file.seek(0, 2)
+        if lock_file.tell() == 0:
+            lock_file.write(b"\0")
+            lock_file.flush()
+        acquired = False
+        while not acquired:
+            try:
+                lock_file.seek(0)
+                msvcrt.locking(lock_file.fileno(), msvcrt.LK_NBLCK, 1)
+                acquired = True
+            except OSError:
+                logger.info("waiting for exclusive GPU slot: %s", lock_path)
+                time.sleep(5)
+        try:
+            logger.info("acquired exclusive GPU slot: %s", lock_path)
+            yield
+        finally:
+            lock_file.seek(0)
+            msvcrt.locking(lock_file.fileno(), msvcrt.LK_UNLCK, 1)
 
 
 def _write_comparison(
@@ -206,6 +249,7 @@ def _write_comparison(
             "best_validation_accuracy": baseline["best_validation_accuracy"],
             "convergence_history": baseline["convergence_history"],
             "unique_fitness_evaluations": baseline_state["cache_misses"],
+            "fitness_evaluations": baseline["fitness_evaluations"],
             "cache_hits": baseline_state["cache_hits"],
             "runtime_seconds": baseline["runtime_seconds"],
             "best_hyperparameters": baseline["best_hyperparameters"],
@@ -222,7 +266,18 @@ def _write_comparison(
             ],
             "convergence_history": igwo["convergence_history"],
             "unique_fitness_evaluations": igwo["unique_fitness_evaluations"],
+            "fitness_evaluations": igwo["fitness_evaluations"],
             "cache_hits": igwo["cache_hits"],
+            "evaluation_budget": igwo["optimizer_state"]["evaluation_budget"],
+            "local_search_evaluation_count": igwo[
+                "local_search_evaluation_count"
+            ],
+            "local_search_global_best_improvements": igwo[
+                "local_search_global_best_improvements"
+            ],
+            "incomplete_local_evaluations": igwo[
+                "incomplete_local_evaluations"
+            ],
             "runtime_seconds": igwo["runtime_seconds"],
             "best_hyperparameters": igwo["best_hyperparameters"],
         },
@@ -237,12 +292,13 @@ def _write_comparison(
                 - baseline_state["cache_misses"]
             ),
             "runtime_seconds": igwo["runtime_seconds"] - baseline["runtime_seconds"],
+            "evaluation_budget": igwo["optimizer_state"]["evaluation_budget"],
         },
         "interpretation": (
             "One matched seed is exploratory evidence, not a statistical "
             "superiority claim."
         ),
-        "future_seed_runs": _future_seed_statuses(seed),
+        "other_seed_runs": _other_seed_runs(seed),
     }
     write_json(str(study_dir / "comparison_summary.json"), comparison)
 
@@ -257,7 +313,12 @@ def _write_comparison(
             "test_macro_f1",
             "best_validation_accuracy",
             "unique_fitness_evaluations",
+            "fitness_evaluations",
             "cache_hits",
+            "evaluation_budget",
+            "local_search_evaluation_count",
+            "local_search_global_best_improvements",
+            "incomplete_local_evaluations",
             "runtime_seconds",
         ]
         writer = csv.DictWriter(file_handle, fieldnames=fields)
@@ -280,7 +341,18 @@ def _write_comparison(
                     "unique_fitness_evaluations": result[
                         "unique_fitness_evaluations"
                     ],
+                    "fitness_evaluations": result.get("fitness_evaluations"),
                     "cache_hits": result["cache_hits"],
+                    "evaluation_budget": result.get("evaluation_budget"),
+                    "local_search_evaluation_count": result.get(
+                        "local_search_evaluation_count"
+                    ),
+                    "local_search_global_best_improvements": result.get(
+                        "local_search_global_best_improvements"
+                    ),
+                    "incomplete_local_evaluations": result.get(
+                        "incomplete_local_evaluations"
+                    ),
                     "runtime_seconds": result["runtime_seconds"],
                 }
             )
@@ -310,16 +382,24 @@ def _write_comparison(
     plt.close(figure)
 
 
-def run_study(config_path, gwo_runs_dir, study_dir, seed):
+def run_study(config_path, gwo_runs_dir, study_dir, seed, gpu_lock_path=None):
     config = load_config(str(config_path))
     config.random_seed = seed
-    config.runs = 1
-    config.optimizers = ["igwo"]
     baseline_run = seed - 41
     baseline_path = gwo_runs_dir / f"run_{baseline_run:02d}" / "summary.json"
     baseline = _check_baseline(config, baseline_path, seed)
-    expected_initial_positions = _reconstruct_gwo_initial_population(config, seed)
+    if config.population_size != 8 or config.iteration_count != 15:
+        raise ValueError("Archived GWO configuration must be population 8 and 15 iterations")
+    expected_initial_positions = _reconstruct_gwo_initial_population(
+        config, seed
+    )[:IGWO_POPULATION_SIZE]
     baseline_hash = _sha256(baseline_path)
+    evaluation_budget = int(baseline["optimizer_state"]["cache_misses"])
+
+    config.population_size = IGWO_POPULATION_SIZE
+    config.iteration_count = IGWO_ITERATION_COUNT
+    config.runs = 1
+    config.optimizers = ["igwo"]
 
     if study_dir.exists():
         raise FileExistsError(
@@ -342,11 +422,21 @@ def run_study(config_path, gwo_runs_dir, study_dir, seed):
         "torch": str(torch.__version__),
         "device": torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu",
         "igwo_config": config_to_dict(config),
+        "evaluation_budget_unique_trainings": evaluation_budget,
+        "standard_gwo_reference": {
+            "population_size": 8,
+            "iterations": 15,
+            "unique_fitness_evaluations": evaluation_budget,
+            "cache_hits": baseline["optimizer_state"]["cache_hits"],
+        },
         "initial_population_verification": {
-            "method": f"reconstruct GWO _initialize() from seed {seed} and saved bounds",
+            "method": (
+                f"first {IGWO_POPULATION_SIZE} positions from the reconstructed "
+                f"GWO population (seed {seed})"
+            ),
             "positions": expected_initial_positions,
         },
-        "future_seed_runs": _future_seed_statuses(seed),
+        "other_seed_runs": _other_seed_runs(seed),
     }
     write_json(str(study_dir / "study_manifest.json"), study_manifest)
     write_json(str(study_dir / "config_used.json"), config_to_dict(config))
@@ -369,15 +459,31 @@ def run_study(config_path, gwo_runs_dir, study_dir, seed):
     run_dir.mkdir(parents=True)
     logger = setup_logging(str(run_dir / "training.log"))
     logger.info(
-        "starting single IGWO run matched to existing GWO seed=%s; no GWO run will be started",
+        "starting IGWO run seed=%s population=%s iterations=%s unique_training_budget=%s; no GWO run will be started",
         seed,
+        IGWO_POPULATION_SIZE,
+        IGWO_ITERATION_COUNT,
+        evaluation_budget,
     )
     try:
-        outcome = run_single_experiment(config, "igwo", 0, logger)
+        with _exclusive_gpu_lock(gpu_lock_path, logger):
+            outcome = run_single_experiment(
+                config,
+                "igwo",
+                0,
+                logger,
+                evaluation_budget=evaluation_budget,
+            )
         igwo_summary = outcome["summary"]
         if igwo_summary is None:
             raise RuntimeError("IGWO run returned no summary")
-        _check_igwo_run(study_dir, igwo_summary, expected_initial_positions, seed)
+        _check_igwo_run(
+            study_dir,
+            igwo_summary,
+            expected_initial_positions,
+            seed,
+            evaluation_budget,
+        )
         if _sha256(baseline_path) != baseline_hash:
             raise AssertionError("Historical GWO summary changed during the IGWO run")
         _write_comparison(
@@ -395,15 +501,16 @@ def run_study(config_path, gwo_runs_dir, study_dir, seed):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Run one IGWO seed against its existing GWO result; defaults to seed 42."
+        description="Run one matched-budget IGWO seed; defaults to seed 42."
     )
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--gwo-runs-dir", type=Path, default=DEFAULT_GWO_RUNS)
     parser.add_argument("--seed", type=int, choices=(42, 43, 44), default=DEFAULT_SEED)
     parser.add_argument("--study-dir", type=Path, default=None)
+    parser.add_argument("--gpu-lock", type=Path, default=None)
     args = parser.parse_args()
-    study_dir = args.study_dir or DEFAULT_STUDY_ROOT / f"igwo_existing_gwo_seed{args.seed}"
-    run_study(args.config, args.gwo_runs_dir, study_dir, args.seed)
+    study_dir = args.study_dir or DEFAULT_STUDY_ROOT / f"seed_{args.seed}"
+    run_study(args.config, args.gwo_runs_dir, study_dir, args.seed, args.gpu_lock)
 
 
 if __name__ == "__main__":

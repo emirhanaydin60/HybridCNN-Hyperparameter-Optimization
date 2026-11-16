@@ -15,7 +15,7 @@ class ScriptedOptimizer(ImprovedGreyWolfOptimizer):
     def _initialize(self):
         return self.initial_population.copy()
 
-    def _mutate_dimension(self, position, dimension):
+    def _mutate_dimension(self, position, dimension, excluded_values=None):
         value = self.mutations.pop(0)
         candidate = position.copy()
         candidate[dimension] = value
@@ -149,6 +149,39 @@ class ImprovedGreyWolfOptimizerTests(unittest.TestCase):
         self.assertEqual([row["parameter"] for row in history], ["x", "x"])
         self.assertEqual(history[0]["status"], "cache_hit_retry")
         self.assertEqual(best_position.tolist(), [0.4])
+
+    def test_categorical_cache_hits_try_each_alternative_only_once(self):
+        calls = []
+
+        def fitness(position, **kwargs):
+            fitness.cache_hits += 1
+            fitness.last_cache_hit = True
+            calls.append(int(position[0]))
+            return 0.0
+
+        fitness.cache_hits = 0
+        fitness.cache_misses = 1
+        fitness.last_cache_hit = False
+        fitness.is_cached = lambda position: True
+        optimizer = ImprovedGreyWolfOptimizer(
+            fitness,
+            [(0.0, 2.0)],
+            population=1,
+            iterations=1,
+            dimension_specs=[spec("choice", "categorical", [10, 20, 30])],
+            random_seed=11,
+        )
+
+        _, _, history, count, _, missing, stopped = optimizer._local_search(
+            1, np.asarray([0.0]), 0.0
+        )
+
+        self.assertEqual(count, 0)
+        self.assertEqual(missing, 1)
+        self.assertFalse(stopped)
+        self.assertEqual(sorted(calls), [1, 2])
+        self.assertEqual(len(history), 2)
+        self.assertTrue(all(row["status"] == "cache_hit_retry" for row in history))
 
     def test_exact_cache_miss_is_not_rejected_by_a_coarse_signature(self):
         def fitness(position, **kwargs):

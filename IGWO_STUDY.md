@@ -4,6 +4,22 @@ This study compares the unchanged Grey Wolf Optimizer (GWO) with a
 Global-Best-centered Improved GWO (IGWO). It does not add a new model search
 space or use CIFAR-10 test metrics to select candidates.
 
+## Current study plan
+
+The earlier nine-run plan below is superseded for the current execution. The
+existing GWO results for seeds 42–44 are the baseline and must not be rerun.
+Run only the IGWO seed-42 comparison with
+`scripts/run_igwo_existing_gwo_seed.py`; its default output is
+`results/igwo_existing_gwo_seed42/`. It validates the saved GWO configuration,
+checks software versions, reconstructs the seeded GWO initial population
+without fitness evaluations, and compares it with the IGWO run. The script can
+also run a single later seed explicitly with `--seed 43` or `--seed 44`; it
+does not launch those seeds automatically.
+
+Do not use `scripts/run_igwo_comparison.py` for this plan: that earlier
+orchestrator re-runs GWO. Any partial results under
+`results/igwo_comparison/` are retained and are not reused or overwritten.
+
 ## IGWO procedure
 
 For each iteration, IGWO first applies the standard GWO position update to the

@@ -17,7 +17,13 @@ from config import config_to_dict, load_config
 from data_loader import build_data_bundle, build_data_loader
 from metrics import build_confusion_matrix, evaluate_model, train_one_epoch
 from model import HybridCNN
-from optimizers import GreyWolfOptimizer, ParticleSwarmOptimizer, RaoOptimizer, WhaleOptimizationOptimizer
+from optimizers import (
+    GreyWolfOptimizer,
+    ImprovedGreyWolfOptimizer,
+    ParticleSwarmOptimizer,
+    RaoOptimizer,
+    WhaleOptimizationOptimizer,
+)
 from plotting import plot_confusion_matrix, plot_curves, plot_global, plot_locals
 from research_analysis import build_final_report
 from utils import ensure_dir, make_torch_generator, read_json, set_global_seed, setup_logging, write_json
@@ -37,6 +43,7 @@ CLASS_NAMES = [
 
 OPTIMIZER_REGISTRY = {
     "gwo": GreyWolfOptimizer,
+    "igwo": ImprovedGreyWolfOptimizer,
     "pso": ParticleSwarmOptimizer,
     "woa": WhaleOptimizationOptimizer,
     "rao": RaoOptimizer,
@@ -44,6 +51,7 @@ OPTIMIZER_REGISTRY = {
 
 INDIVIDUAL_LABELS = {
     "gwo": "Wolf",
+    "igwo": "Wolf",
     "pso": "Particle",
     "woa": "Whale",
     "rao": "Agent",
@@ -127,6 +135,52 @@ def build_bounds(config):
         (float(np.log10(search_space["learning_rate_min"])), float(np.log10(search_space["learning_rate_max"]))),
         (0, len(search_space["batch_sizes"]) - 1),
         (0, len(search_space["se_ratios"]) - 1),
+    ]
+
+
+def build_dimension_specs(config):
+    search_space = config.search_space
+    return [
+        {
+            "name": "shared_conv_kernel_size",
+            "kind": "categorical",
+            "values": search_space["shared_conv_kernel_sizes"],
+        },
+        {
+            "name": "base_filters",
+            "kind": "categorical",
+            "values": search_space["base_filters"],
+        },
+        {
+            "name": "dilation",
+            "kind": "categorical",
+            "values": search_space["dilations"],
+        },
+        {
+            "name": "final_neurons",
+            "kind": "categorical",
+            "values": search_space["final_neurons"],
+        },
+        {
+            "name": "dropout",
+            "kind": "continuous",
+            "coordinate_scale": "linear",
+        },
+        {
+            "name": "learning_rate",
+            "kind": "continuous",
+            "coordinate_scale": "log10",
+        },
+        {
+            "name": "batch_size",
+            "kind": "categorical",
+            "values": search_space["batch_sizes"],
+        },
+        {
+            "name": "se_ratio",
+            "kind": "categorical",
+            "values": search_space["se_ratios"],
+        },
     ]
 
 
@@ -286,6 +340,11 @@ def write_search_history(csv_path, iteration_summaries):
             "exploration_ratio",
             "exploitation_ratio",
             "iteration_time",
+            "gwo_improved_global_best",
+            "local_search_evaluations",
+            "local_search_improvements",
+            "local_search_missing_evaluations",
+            "global_best_after_local_search",
         ]
         writer = csv.DictWriter(file_handle, fieldnames=fieldnames)
         writer.writeheader()
@@ -293,7 +352,15 @@ def write_search_history(csv_path, iteration_summaries):
             writer.writerow({key: summary.get(key) for key in fieldnames})
 
 
-def build_search_result(bundle, config, device, logger, run_dir, algorithm_name):
+def build_search_result(
+    bundle,
+    config,
+    device,
+    logger,
+    run_dir,
+    algorithm_name,
+    evaluation_budget=None,
+):
     search_history_path = os.path.join(run_dir, "search_history.csv")
     if os.path.exists(search_history_path):
         os.remove(search_history_path)
@@ -322,7 +389,7 @@ def build_search_result(bundle, config, device, logger, run_dir, algorithm_name)
             train_loader, val_loader = build_candidate_loaders(bundle, model_config["batch_size"], eval_seed, config.num_workers)
             model = build_model(model_config, bundle.in_channels, bundle.img_size, bundle.num_classes).to(device)
             eval_start = time.perf_counter()
-            _, _, val_accuracy, _, _ = train_model(
+            model, _, val_accuracy, _, _ = train_model(
                 model,
                 train_loader,
                 val_loader,
@@ -334,8 +401,26 @@ def build_search_result(bundle, config, device, logger, run_dir, algorithm_name)
                 lr_reduce_patience=config.lr_reduce_patience,
                 logger=logger,
             )
+            validation_result = evaluate_model(model, val_loader, device)
+            validation_matrix = build_confusion_matrix(
+                validation_result["targets"],
+                validation_result["predictions"],
+                bundle.num_classes,
+            )
+            validation_summary = summarize_confusion_matrix(validation_matrix)
             evaluation_time = time.perf_counter() - eval_start
-            fitness_cache[solution_key] = {"fitness": val_accuracy, "evaluation_time": evaluation_time}
+            fitness_cache[solution_key] = {
+                "fitness": val_accuracy,
+                "evaluation_time": evaluation_time,
+                "validation_metrics": {
+                    "accuracy": float(validation_result["accuracy"]),
+                    "loss": float(validation_result["loss"]),
+                    "macro_precision": validation_summary["precision"],
+                    "macro_recall": validation_summary["recall"],
+                    "macro_f1": validation_summary["f1"],
+                    "balanced_accuracy": validation_summary["recall"],
+                },
+            }
             cache_misses += 1
             cache_hit = False
 
@@ -348,18 +433,45 @@ def build_search_result(bundle, config, device, logger, run_dir, algorithm_name)
             cache_hit,
             model_config,
         )
+        fitness.last_cache_hit = cache_hit
+        fitness.cache_hits = cache_hits
+        fitness.cache_misses = cache_misses
         return val_accuracy
 
+    def is_cached(position):
+        model_config = map_position_to_config(position, config)
+        return tuple(model_config.items()) in fitness_cache
+
+    fitness.last_cache_hit = False
+    fitness.cache_hits = cache_hits
+    fitness.cache_misses = cache_misses
+    fitness.is_cached = is_cached
     optimizer_cls = OPTIMIZER_REGISTRY[algorithm_name]
-    optimizer = optimizer_cls(
-        fitness,
-        bounds,
-        population=config.population_size,
-        iterations=config.iteration_count,
-        solution_signature_func=lambda position: position_signature(position, config),
-        random_seed=config.random_seed,
-    )
+    optimizer_args = {
+        "population": config.population_size,
+        "iterations": config.iteration_count,
+        "solution_signature_func": lambda position: position_signature(
+            position, config
+        ),
+        "random_seed": config.random_seed,
+    }
+    if algorithm_name == "igwo":
+        optimizer_args.update(
+            {
+                "dimension_specs": build_dimension_specs(config),
+                "describe_solution_func": lambda position: map_position_to_config(
+                    position, config
+                ),
+                "evaluation_budget": evaluation_budget,
+                "logger": logger,
+            }
+        )
+    elif evaluation_budget is not None:
+        raise ValueError("Fitness evaluation budgets are supported only by IGWO")
+    optimizer = optimizer_cls(fitness, bounds, **optimizer_args)
     result = optimizer.optimize()
+    best_config = map_position_to_config(result["best_pos"], config)
+    best_cache_entry = fitness_cache[tuple(best_config.items())]
     result.update(
         {
             "optimization_time": time.perf_counter() - search_start,
@@ -372,6 +484,17 @@ def build_search_result(bundle, config, device, logger, run_dir, algorithm_name)
             "saved_training_count": cache_hits,
             "saved_estimated_time": saved_estimated_time,
             "fitness_cache": fitness_cache,
+            "best_validation_metrics": best_cache_entry.get(
+                "validation_metrics",
+                {
+                    "accuracy": result["best_fitness"],
+                    "loss": None,
+                    "macro_precision": None,
+                    "macro_recall": None,
+                    "macro_f1": None,
+                    "balanced_accuracy": None,
+                },
+            ),
         }
     )
     write_search_history(search_history_path, result["iteration_summaries"])
@@ -382,7 +505,7 @@ def run_final_training(bundle, config, best_config, device, logger, run_dir):
     final_train_loader, monitor_loader = build_final_training_bundle(bundle, best_config["batch_size"], config.random_seed, config.num_workers)
     model = build_model(best_config, bundle.in_channels, bundle.img_size, bundle.num_classes).to(device)
     best_model_path = os.path.join(run_dir, "best_model.pth")
-    model, history, best_monitor_accuracy, _, training_time = train_model(
+    model, history, best_monitor_accuracy, best_monitor_epoch, training_time = train_model(
         model,
         final_train_loader,
         monitor_loader,
@@ -402,12 +525,14 @@ def run_final_training(bundle, config, best_config, device, logger, run_dir):
         "model": model,
         "history": history,
         "monitor_accuracy": best_monitor_accuracy,
+        "best_monitor_epoch": best_monitor_epoch,
         "test_accuracy": test_metrics["accuracy"],
         "test_loss": test_metrics["loss"],
         "test_metrics": test_metrics,
         "confusion_matrix": confusion_matrix,
         "training_time": training_time,
         "best_model_path": best_model_path,
+        "device": str(device),
     }
 
 
@@ -439,19 +564,54 @@ def save_run_outputs(run_dir, algorithm_name, config, search_result, final_resul
         "dataset": config.dataset,
         "run_seed": run_seed,
         "best_validation_accuracy": float(search_result["best_fitness"]),
+        "best_validation_metrics": search_result["best_validation_metrics"],
         "best_test_accuracy": float(final_result["test_accuracy"]),
         "precision": float(final_result["test_metrics"]["precision"]),
         "recall": float(final_result["test_metrics"]["recall"]),
         "f1": float(final_result["test_metrics"]["f1"]),
+        "balanced_accuracy": float(final_result["test_metrics"]["recall"]),
+        "test_loss": float(final_result["test_loss"]),
+        "best_final_monitor_accuracy": float(final_result["monitor_accuracy"]),
+        "best_final_monitor_epoch": int(final_result["best_monitor_epoch"]),
+        "trainable_parameter_count": int(
+            sum(
+                parameter.numel()
+                for parameter in final_result["model"].parameters()
+                if parameter.requires_grad
+            )
+        ),
         "training_loss": final_result["history"]["train_loss"],
         "validation_loss": final_result["history"]["val_loss"],
         "total_search_time_seconds": float(search_result["optimization_time"]),
         "final_training_time_seconds": float(final_result["training_time"]),
         "runtime_seconds": float(search_result["optimization_time"] + final_result["training_time"]),
         "fitness_evaluations": int(search_result["evaluation_count"]),
+        "unique_fitness_evaluations": int(search_result["cache_misses"]),
+        "cache_hits": int(search_result["cache_hits"]),
+        "gwo_global_best_improvements": int(
+            sum(search_result.get("gwo_improvements", []))
+        ),
+        "local_search_global_best_improvements": int(
+            sum(search_result.get("local_search_improvements", []))
+        ),
+        "local_search_evaluation_count": int(
+            sum(search_result.get("local_search_evaluation_counts", []))
+        ),
+        "local_search_success_rate": float(
+            search_result.get("local_search_success_rate", 0.0)
+        ),
+        "incomplete_local_evaluations": int(
+            search_result.get("incomplete_local_evaluations", 0)
+        ),
         "average_fitness_evaluation_duration": float(search_result["optimization_time"] / max(search_result["evaluation_count"], 1)),
         "best_hyperparameters": best_config,
         "convergence_history": search_result["global_bests"],
+        "initial_population_positions": search_result[
+            "initial_population_positions"
+        ],
+        "initial_population_signatures": search_result[
+            "initial_population_signatures"
+        ],
         "mean_population_fitness_history": [summary["average_fitness"] for summary in search_result["iteration_summaries"]],
         "worst_population_fitness_history": [summary["worst_fitness"] for summary in search_result["iteration_summaries"]],
         "diversity_history": [summary["population_diversity"] for summary in search_result["iteration_summaries"]],
@@ -465,18 +625,87 @@ def save_run_outputs(run_dir, algorithm_name, config, search_result, final_resul
             "cache_misses": search_result["cache_misses"],
             "cache_reuse_rate": search_result["cache_reuse_rate"],
             "unique_solutions_evaluated": search_result["unique_solutions_evaluated"],
+            "evaluation_budget": search_result.get("evaluation_budget"),
+            "budget_exhausted": search_result.get("budget_exhausted", False),
         },
         "package_versions": {
             "python": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
             "numpy": np.__version__,
             "torch": torch.__version__,
         },
+        "device": final_result["device"],
     }
+    write_json(
+        os.path.join(run_dir, "metrics.json"),
+        {
+            "selection": {
+                "fitness_metric": "validation_accuracy",
+                "final_checkpoint_metric": "monitor_accuracy",
+                "final_checkpoint_epoch": run_summary["best_final_monitor_epoch"],
+                "final_checkpoint_score": run_summary[
+                    "best_final_monitor_accuracy"
+                ],
+            },
+            "best_validation_metrics": run_summary["best_validation_metrics"],
+            "test": {
+                "accuracy": run_summary["best_test_accuracy"],
+                "macro_precision": run_summary["precision"],
+                "macro_recall": run_summary["recall"],
+                "macro_f1": run_summary["f1"],
+                "balanced_accuracy": run_summary["balanced_accuracy"],
+                "loss": run_summary["test_loss"],
+            },
+        },
+    )
+    write_json(
+        os.path.join(run_dir, "history.json"),
+        {
+            "train": {
+                "loss": final_result["history"]["train_loss"],
+                "accuracy": final_result["history"]["train_accuracy"],
+            },
+            "monitor": {
+                "loss": final_result["history"]["val_loss"],
+                "accuracy": final_result["history"]["val_accuracy"],
+            },
+        },
+    )
+    write_json(
+        os.path.join(run_dir, "confusion_matrix.json"),
+        {
+            "class_names": CLASS_NAMES,
+            "matrix": np.asarray(final_result["confusion_matrix"]).tolist(),
+            "total": int(np.asarray(final_result["confusion_matrix"]).sum()),
+        },
+    )
     write_json(os.path.join(run_dir, "summary.json"), run_summary)
+    if algorithm_name == "igwo":
+        write_json(
+            os.path.join(run_dir, "igwo_trace.json"),
+            {
+                "gwo_improvements_by_iteration": search_result["gwo_improvements"],
+                "local_search_improvements_by_iteration": search_result[
+                    "local_search_improvements"
+                ],
+                "local_search_evaluations_by_iteration": search_result[
+                    "local_search_evaluation_counts"
+                ],
+                "local_search_attempts": search_result["local_search_history"],
+                "incomplete_local_evaluations": search_result[
+                    "incomplete_local_evaluations"
+                ],
+            },
+        )
     return run_summary
 
 
-def run_single_experiment(base_config, algorithm_name, run_index, logger):
+def run_single_experiment(
+    base_config,
+    algorithm_name,
+    run_index,
+    logger,
+    evaluation_budget=None,
+):
     run_config = copy.deepcopy(base_config)
 
     run_number = run_index + 1
@@ -512,7 +741,15 @@ def run_single_experiment(base_config, algorithm_name, run_index, logger):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logger.info("run_start=%s algorithm=%s seed=%s run_dir=%s", run_index + 1, algorithm_name, run_seed, run_dir)
-    search_result = build_search_result(bundle, run_config, device, logger, run_dir, algorithm_name)
+    search_result = build_search_result(
+        bundle,
+        run_config,
+        device,
+        logger,
+        run_dir,
+        algorithm_name,
+        evaluation_budget=evaluation_budget,
+    )
     best_config = map_position_to_config(search_result["best_pos"], run_config)
     final_result = run_final_training(bundle, run_config, best_config, device, logger, run_dir)
     run_summary = save_run_outputs(run_dir, algorithm_name, run_config, search_result, final_result, best_config, run_seed, run_number)

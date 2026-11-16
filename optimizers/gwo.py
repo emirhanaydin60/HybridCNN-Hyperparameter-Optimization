@@ -9,6 +9,10 @@ class GreyWolfOptimizer(BaseOptimizer):
     def optimize(self):
         total_start = time.perf_counter()
         wolves = self._initialize()
+        initial_population_positions = [wolf.tolist() for wolf in wolves]
+        initial_population_signatures = [
+            list(self._signature(wolf)) for wolf in wolves
+        ]
         fitness = [self._evaluate(wolf, iteration=0, agent_id=index + 1) for index, wolf in enumerate(wolves)]
         pbest_pos = [wolf.copy() for wolf in wolves]
         pbest_fit = fitness.copy()
@@ -65,6 +69,8 @@ class GreyWolfOptimizer(BaseOptimizer):
             "best_conf": best_pos,
             "best_fitness": float(pbest_fit[best_index]),
             "best_index": best_index + 1,
+            "initial_population_positions": initial_population_positions,
+            "initial_population_signatures": initial_population_signatures,
             "global_bests": global_bests,
             "local_bests": local_bests,
             "iteration_times": iteration_times,

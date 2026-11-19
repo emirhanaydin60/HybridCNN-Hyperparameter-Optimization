@@ -12,7 +12,7 @@ import numpy as np
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_STUDY_ROOT = ROOT / "results" / "igwo_comparison" / "paper_config_6x10"
+DEFAULT_STUDY_ROOT = ROOT / "results" / "igwo_comparison" / "paper_config_4x15"
 SEEDS = (42, 43, 44)
 METRICS = {
     "validation_accuracy": {
@@ -131,7 +131,7 @@ def _stats(values, higher_is_better):
 
 def _build_report(rows):
     report = {
-        "study": "CIFAR-10 IGWO paper parameters (population 6, iterations 10)",
+        "study": "CIFAR-10 IGWO paper parameters (population 4, iterations 15)",
         "seeds": list(SEEDS),
         "interpretation": (
             "Descriptive results only; three seeds do not establish statistical "

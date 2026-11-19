@@ -29,10 +29,10 @@ from utils import setup_logging, write_json
 
 DEFAULT_CONFIG = ROOT / "results" / "main_experiment" / "config_used.json"
 DEFAULT_GWO_RUNS = ROOT / "results" / "main_experiment" / "GWO"
-DEFAULT_STUDY_ROOT = ROOT / "results" / "igwo_comparison" / "paper_config_6x10"
+DEFAULT_STUDY_ROOT = ROOT / "results" / "igwo_comparison" / "paper_config_4x15"
 DEFAULT_SEED = 42
-IGWO_POPULATION_SIZE = 6
-IGWO_ITERATION_COUNT = 10
+IGWO_POPULATION_SIZE = 4
+IGWO_ITERATION_COUNT = 15
 MATCHED_CONFIG_KEYS = (
     "dataset",
     "model_name",

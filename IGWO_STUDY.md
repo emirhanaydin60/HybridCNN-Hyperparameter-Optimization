@@ -9,11 +9,13 @@ configuration is `results/main_experiment/config_used.json`: GWO population 8,
 actual unique candidate-training counts are 124, 123, and 124 (with 4, 5, and
 4 cache hits).
 
-IGWO uses population 6, 10 iterations, and 6 local-search candidates per
+The earlier 6x10 IGWO results are preserved in
+`results/igwo_comparison/paper_config_6x10/`. The current IGWO study uses
+population 4, 15 iterations, and 4 local-search candidates per
 iteration. Local candidate count is derived from population size. Each seed's
 unique-training budget is capped at the corresponding existing GWO run's
-cache-miss count. Since IGWO has at most 6 initial evaluations plus
-`10 * (6 GWO candidates + 6 local candidates)`, this budget includes startup
+cache-miss count. Since IGWO has at most 4 initial evaluations plus
+`15 * (4 GWO candidates + 4 local candidates)`, this budget includes startup
 and cache effects rather than assuming equal theoretical iteration counts.
 When the cap is reached, the last local-search batch may be incomplete; this is
 recorded and no extra training is allowed. Cache hits skip CNN training and
@@ -29,13 +31,13 @@ from the Copilot session.
 The archived GWO summaries do not contain raw initial-population positions.
 The runner checks the archived config and software versions, reconstructs the
 GWO initial population deterministically from the matching seed and search
-bounds, then verifies that IGWO starts from the first six corresponding
+bounds, then verifies that IGWO starts from the first four corresponding
 positions. This reconstruction performs no fitness evaluations and launches
 no GWO training.
 
 ## IGWO local search
 
-Each iteration first performs the standard GWO position update for all six
+Each iteration first performs the standard GWO position update for all four
 wolves. It then sequentially searches around the current Global Best:
 
 1. Select one mutable hyperparameter.
@@ -45,7 +47,7 @@ wolves. It then sequentially searches around the current Global Best:
    clipped to its bounds.
 3. If the candidate improves fitness, immediately make it the Global Best and
    use it as the center for the next local candidate.
-4. Count only unique candidate trainings toward the six-candidate local
+4. Count only unique candidate trainings toward the four-candidate local
    search. Cache hits and duplicate solutions are retried without consuming
    training budget.
 5. Insert an improved Global Best into the population by replacing its worst
@@ -86,7 +88,7 @@ By default, the launcher uses
 `C:\Users\emirh\anaconda3\envs\pytorch-v1\python.exe`; supply `-PythonPath` to
 override it. The launcher checks the archived GWO config/results and refuses
 to overwrite any target seed directory. Per-seed files go under
-`results/igwo_comparison/paper_config_6x10/seed_42`, `seed_43`, and `seed_44`.
+`results/igwo_comparison/paper_config_4x15/seed_42`, `seed_43`, and `seed_44`.
 The parent contains `process_launch.json`, per-seed stdout/stderr logs, and a
 shared GPU-lock file. Each run contains its config, metrics, history,
 confusion matrix, IGWO trace, checkpoint, plots, and `training.log`.

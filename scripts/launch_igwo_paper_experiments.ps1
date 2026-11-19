@@ -23,7 +23,7 @@ if (
     throw "Archived CIFAR-10 GWO configuration differs from the expected paper protocol"
 }
 
-$studyRoot = Join-Path $repositoryRoot "results\igwo_comparison\paper_config_6x10"
+$studyRoot = Join-Path $repositoryRoot "results\igwo_comparison\paper_config_4x15"
 foreach ($seed in @(42, 43, 44)) {
     $baselineRun = $seed - 41
     $baselinePath = Join-Path $repositoryRoot "results\main_experiment\GWO\run_$('{0:d2}' -f $baselineRun)\summary.json"

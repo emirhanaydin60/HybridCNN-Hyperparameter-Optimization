@@ -15,7 +15,9 @@ class ScriptedOptimizer(ImprovedGreyWolfOptimizer):
     def _initialize(self):
         return self.initial_population.copy()
 
-    def _mutate_dimension(self, position, dimension, excluded_values=None):
+    def _mutate_dimension(
+        self, position, dimension, excluded_values=None, step_size=None
+    ):
         value = self.mutations.pop(0)
         candidate = position.copy()
         candidate[dimension] = value
@@ -30,7 +32,7 @@ def spec(name="x", kind="continuous", values=None):
 
 
 class ImprovedGreyWolfOptimizerTests(unittest.TestCase):
-    def test_local_search_evaluates_population_sized_unique_candidates(self):
+    def test_local_search_targets_two_unique_candidates_per_iteration(self):
         evaluated = set()
 
         def fitness(position, **kwargs):
@@ -46,9 +48,20 @@ class ImprovedGreyWolfOptimizerTests(unittest.TestCase):
         )
         result = optimizer.optimize()
 
-        self.assertEqual(result["local_search_evaluation_counts"], [3])
+        self.assertEqual(result["local_search_evaluation_counts"], [2])
         self.assertEqual(result["incomplete_local_evaluations"], 0)
-        self.assertEqual(len(result["local_search_history"]), 3)
+        self.assertEqual(len(result["local_search_history"]), 2)
+        self.assertTrue(
+            all(
+                "step_size" in attempt
+                and "step_size_before" in attempt
+                and "step_size_after" in attempt
+                and "candidate_fitness" in attempt
+                and "cache_hit" in attempt
+                and "improved" in attempt
+                for attempt in result["local_search_history"]
+            )
+        )
         self.assertEqual(len(evaluated), len(result["local_search_history"]) + 6)
 
     def test_only_one_coordinate_changes_per_local_candidate(self):
@@ -72,7 +85,12 @@ class ImprovedGreyWolfOptimizerTests(unittest.TestCase):
         result = optimizer.optimize()
 
         for attempt in result["local_search_history"]:
-            if attempt["status"] in ("duplicate_candidate_retry", "retry_exhausted"):
+            if attempt["status"] in (
+                "duplicate_candidate_retry",
+                "retry_exhausted",
+                "no_neighbor",
+                "budget_blocked",
+            ):
                 continue
             changed = np.flatnonzero(
                 np.asarray(attempt["base_position"])
@@ -99,6 +117,7 @@ class ImprovedGreyWolfOptimizerTests(unittest.TestCase):
             dimension_specs=[spec("x")],
             initial_population=[[0.2], [0.3]],
             mutations=[0.5, 0.8],
+            local_search_candidates=2,
             random_seed=1,
         )
         best_position, best_fitness, history, count, improvements, missing, stopped = (
@@ -137,6 +156,7 @@ class ImprovedGreyWolfOptimizerTests(unittest.TestCase):
             dimension_specs=[spec("x")],
             initial_population=[[0.2]],
             mutations=[0.3, 0.4],
+            local_search_candidates=1,
             random_seed=2,
         )
         best_position, _, history, count, _, missing, _ = optimizer._local_search(
@@ -169,6 +189,7 @@ class ImprovedGreyWolfOptimizerTests(unittest.TestCase):
             population=1,
             iterations=1,
             dimension_specs=[spec("choice", "categorical", [10, 20, 30])],
+            local_search_candidates=1,
             random_seed=11,
         )
 
@@ -180,8 +201,11 @@ class ImprovedGreyWolfOptimizerTests(unittest.TestCase):
         self.assertEqual(missing, 1)
         self.assertFalse(stopped)
         self.assertEqual(sorted(calls), [1, 2])
-        self.assertEqual(len(history), 2)
-        self.assertTrue(all(row["status"] == "cache_hit_retry" for row in history))
+        self.assertEqual(len(history), 3)
+        self.assertTrue(
+            all(row["status"] == "cache_hit_retry" for row in history[:2])
+        )
+        self.assertEqual(history[-1]["status"], "no_neighbor")
 
     def test_exact_cache_miss_is_not_rejected_by_a_coarse_signature(self):
         def fitness(position, **kwargs):
@@ -202,6 +226,7 @@ class ImprovedGreyWolfOptimizerTests(unittest.TestCase):
             dimension_specs=[spec("x")],
             initial_population=[[0.2]],
             mutations=[0.4],
+            local_search_candidates=1,
             random_seed=4,
         )
         optimizer._known_signatures.add(("rounded-collision",))
@@ -237,6 +262,7 @@ class ImprovedGreyWolfOptimizerTests(unittest.TestCase):
             evaluation_budget=1,
             initial_population=[[0.2]],
             mutations=[0.4],
+            local_search_candidates=1,
             random_seed=3,
         )
         best_position, _, _, count, _, missing, stopped = optimizer._local_search(
@@ -273,6 +299,67 @@ class ImprovedGreyWolfOptimizerTests(unittest.TestCase):
         )
         self.assertEqual(first["global_bests"], second["global_bests"])
         self.assertEqual(first["local_search_history"], second["local_search_history"])
+
+    def test_adaptive_step_sizes_shrink_on_improvement_and_grow_otherwise(self):
+        optimizer = ImprovedGreyWolfOptimizer(
+            lambda position, **kwargs: float(position[0]),
+            [(0.0, 1.0)],
+            dimension_specs=[spec("dropout")],
+            random_seed=5,
+        )
+
+        initial, after_no_improvement = optimizer._adapt_step_size(0, False)
+        before_improvement, after_improvement = optimizer._adapt_step_size(0, True)
+
+        self.assertAlmostEqual(initial, 0.1)
+        self.assertAlmostEqual(after_no_improvement, 0.2)
+        self.assertAlmostEqual(before_improvement, 0.2)
+        self.assertAlmostEqual(after_improvement, 0.1)
+        for _ in range(10):
+            _, step = optimizer._adapt_step_size(0, True)
+        self.assertAlmostEqual(step, 0.01)
+        _, step = optimizer._adapt_step_size(0, False)
+        self.assertAlmostEqual(step, 0.02)
+
+    def test_log_scaled_continuous_step_is_applied_in_log_coordinates(self):
+        optimizer = ImprovedGreyWolfOptimizer(
+            lambda position, **kwargs: float(position[0]),
+            [(-5.0, -2.0)],
+            dimension_specs=[
+                {
+                    "name": "learning_rate",
+                    "kind": "continuous",
+                    "coordinate_scale": "log10",
+                }
+            ],
+            random_seed=8,
+        )
+        start = np.asarray([-3.0])
+        candidate = optimizer._mutate_dimension(start, 0, step_size=0.3)
+
+        delta = abs(candidate[0] - start[0])
+        self.assertGreaterEqual(delta, 0.03)
+        self.assertLessEqual(delta, 0.3)
+        self.assertAlmostEqual(
+            10 ** candidate[0] / (10 ** start[0]),
+            10 ** (candidate[0] - start[0]),
+        )
+
+    def test_integer_search_uses_bounded_integer_neighbors(self):
+        optimizer = ImprovedGreyWolfOptimizer(
+            lambda position, **kwargs: float(position[0]),
+            [(1, 5)],
+            dimension_specs=[spec("layers", "integer")],
+            random_seed=13,
+        )
+        start = np.asarray([3.0])
+        adjacent = optimizer._mutate_dimension(start, 0)
+        self.assertIn(int(adjacent[0]), (2, 4))
+
+        _, grown = optimizer._adapt_step_size(0, False)
+        self.assertEqual(grown, 2.0)
+        farther = optimizer._mutate_dimension(start, 0, step_size=grown)
+        self.assertIn(int(farther[0]), (1, 5))
 
     def test_gwo_and_igwo_start_from_identical_seeded_populations(self):
         fitness = lambda position, **kwargs: float(-np.sum(position**2))

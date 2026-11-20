@@ -24,6 +24,7 @@ from optimizers import (
     RaoOptimizer,
     WhaleOptimizationOptimizer,
 )
+from optimizers.igwo import DEFAULT_LOCAL_SEARCH_CANDIDATES
 from plotting import plot_confusion_matrix, plot_curves, plot_global, plot_locals
 from research_analysis import build_final_report
 from utils import ensure_dir, make_torch_generator, read_json, set_global_seed, setup_logging, write_json
@@ -464,6 +465,7 @@ def build_search_result(
                 ),
                 "evaluation_budget": evaluation_budget,
                 "logger": logger,
+                "local_search_candidates": DEFAULT_LOCAL_SEARCH_CANDIDATES,
             }
         )
     elif evaluation_budget is not None:
@@ -635,6 +637,13 @@ def save_run_outputs(run_dir, algorithm_name, config, search_result, final_resul
         },
         "device": final_result["device"],
     }
+    if algorithm_name == "igwo":
+        run_summary["local_search_candidates_per_iteration"] = int(
+            search_result["local_search_candidates_per_iteration"]
+        )
+        run_summary["local_search_step_sizes"] = search_result[
+            "local_search_step_sizes"
+        ]
     write_json(
         os.path.join(run_dir, "metrics.json"),
         {
@@ -687,8 +696,16 @@ def save_run_outputs(run_dir, algorithm_name, config, search_result, final_resul
                 "local_search_improvements_by_iteration": search_result[
                     "local_search_improvements"
                 ],
+                "configured_iterations": search_result["configured_iterations"],
+                "iterations_attempted": search_result["iterations_attempted"],
+                "local_search_candidates_per_iteration": search_result[
+                    "local_search_candidates_per_iteration"
+                ],
                 "local_search_evaluations_by_iteration": search_result[
                     "local_search_evaluation_counts"
+                ],
+                "local_search_step_sizes": search_result[
+                    "local_search_step_sizes"
                 ],
                 "local_search_attempts": search_result["local_search_history"],
                 "incomplete_local_evaluations": search_result[

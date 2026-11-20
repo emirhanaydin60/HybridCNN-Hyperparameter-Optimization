@@ -5,8 +5,11 @@ import numpy as np
 from .base_optimizer import BaseOptimizer
 
 
+DEFAULT_LOCAL_SEARCH_CANDIDATES = 2
+
+
 class ImprovedGreyWolfOptimizer(BaseOptimizer):
-    """Grey Wolf Optimizer with sequential, global-best-centered local search."""
+    """GWO with adaptive, guided local search around the Global Best."""
 
     def __init__(
         self,
@@ -21,6 +24,7 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
         evaluation_budget=None,
         logger=None,
         retry_limit=64,
+        local_search_candidates=DEFAULT_LOCAL_SEARCH_CANDIDATES,
     ):
         super().__init__(
             fitness_func,
@@ -36,6 +40,8 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
             raise ValueError("iterations must be positive")
         if retry_limit < 1:
             raise ValueError("retry_limit must be positive")
+        if local_search_candidates < 1:
+            raise ValueError("local_search_candidates must be positive")
         if evaluation_budget is not None and evaluation_budget < self.population:
             raise ValueError("evaluation_budget must allow the initial population")
         self.dimension_specs = dimension_specs or [
@@ -50,7 +56,12 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
         self.evaluation_budget = evaluation_budget
         self.logger = logger
         self.retry_limit = retry_limit
+        self.local_search_candidates = int(local_search_candidates)
         self._known_signatures = set()
+        self._initial_step_sizes = []
+        self._step_sizes = []
+        self._step_size_bounds = []
+        self._initialize_step_sizes()
 
     def _fitness_cache_misses(self):
         return int(getattr(self.fitness_func, "cache_misses", 0))
@@ -75,11 +86,87 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
         if self.logger is not None:
             getattr(self.logger, level)(message, *args)
 
-    def _mutate_dimension(self, position, dimension, excluded_values=None):
+    def _initialize_step_sizes(self):
+        for index, spec in enumerate(self.dimension_specs):
+            lower, upper = self.bounds[index]
+            kind = spec["kind"]
+            if kind == "continuous":
+                width = upper - lower
+                if width <= 0:
+                    bounds = None
+                    initial = None
+                else:
+                    minimum = max(width * 0.01, np.finfo(float).eps)
+                    maximum = max(width * 0.5, minimum)
+                    bounds = (minimum, maximum)
+                    initial = float(np.clip(width * 0.1, minimum, maximum))
+            elif kind == "integer":
+                values = spec.get("values")
+                if values:
+                    integer_values = [
+                        int(value)
+                        for value in values
+                        if np.ceil(lower) <= int(value) <= np.floor(upper)
+                    ]
+                else:
+                    integer_values = list(
+                        range(int(np.ceil(lower)), int(np.floor(upper)) + 1)
+                    )
+                if integer_values:
+                    maximum = max(integer_values) - min(integer_values)
+                else:
+                    maximum = 0
+                bounds = (1.0, float(max(1, maximum))) if maximum > 0 else None
+                initial = 1.0 if bounds is not None else None
+            elif kind == "categorical":
+                bounds = None
+                initial = None
+            else:
+                raise ValueError(f"Unsupported dimension kind: {kind}")
+            self._initial_step_sizes.append(initial)
+            self._step_sizes.append(initial)
+            self._step_size_bounds.append(bounds)
+
+    def _adapt_step_size(self, dimension, improved):
+        current = self._step_sizes[dimension]
+        bounds = self._step_size_bounds[dimension]
+        if current is None or bounds is None:
+            return current, current
+        minimum, maximum = bounds
+        factor = 0.5 if improved else 2.0
+        updated = float(np.clip(current * factor, minimum, maximum))
+        if self.dimension_specs[dimension]["kind"] == "integer":
+            updated = float(np.clip(round(updated), minimum, maximum))
+        self._step_sizes[dimension] = updated
+        return current, updated
+
+    def _step_size_report(self):
+        report = []
+        for index, spec in enumerate(self.dimension_specs):
+            bounds = self._step_size_bounds[index]
+            report.append(
+                {
+                    "parameter": spec["name"],
+                    "coordinate_scale": spec.get("coordinate_scale", "linear")
+                    if spec["kind"] == "continuous"
+                    else spec["kind"],
+                    "initial_step_size": self._initial_step_sizes[index],
+                    "final_step_size": self._step_sizes[index],
+                    "minimum_step_size": bounds[0] if bounds else None,
+                    "maximum_step_size": bounds[1] if bounds else None,
+                }
+            )
+        return report
+
+    def _mutate_dimension(
+        self, position, dimension, excluded_values=None, step_size=None
+    ):
         candidate = position.copy()
         lower, upper = self.bounds[dimension]
         spec = self.dimension_specs[dimension]
         excluded_values = excluded_values or set()
+        if step_size is None:
+            step_size = self._step_sizes[dimension]
 
         if spec["kind"] == "categorical":
             values = spec.get("values")
@@ -96,22 +183,58 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
             candidate[dimension] = self.random_state.choice(alternatives)
             return self._clip(candidate)
 
+        if spec["kind"] == "integer":
+            values = spec.get("values")
+            if values:
+                valid_values = sorted(
+                    {
+                        int(value)
+                        for value in values
+                        if np.ceil(lower) <= int(value) <= np.floor(upper)
+                    }
+                )
+            else:
+                valid_values = list(
+                    range(int(np.ceil(lower)), int(np.floor(upper)) + 1)
+                )
+            current = int(round(position[dimension]))
+            available = [
+                value
+                for value in valid_values
+                if value != current and value not in excluded_values
+            ]
+            if not available or step_size is None:
+                return None
+            distance = max(1, int(round(step_size)))
+            closest_distance = min(abs(abs(value - current) - distance) for value in available)
+            choices = [
+                value
+                for value in available
+                if abs(abs(value - current) - distance) == closest_distance
+            ]
+            candidate[dimension] = self.random_state.choice(choices)
+            return self._clip(candidate)
+
         if spec["kind"] != "continuous":
             raise ValueError(f"Unsupported dimension kind: {spec['kind']}")
 
-        width = upper - lower
-        if width <= 0:
+        if step_size is None or upper <= lower:
             return None
+        coordinate_scale = spec.get("coordinate_scale", "linear")
+        if coordinate_scale not in ("linear", "log10"):
+            raise ValueError(
+                f"Unsupported coordinate scale: {coordinate_scale}"
+            )
         current = float(position[dimension])
+        minimum_step = self._step_size_bounds[dimension][0]
         for _ in range(16):
-            step = float(self.random_state.normal(0.0, width * 0.1))
-            value = float(np.clip(current + step, lower, upper))
-            if value != current and value not in excluded_values:
-                candidate[dimension] = value
-                return self._clip(candidate)
-
-        for _ in range(16):
-            value = float(self.random_state.uniform(lower, upper))
+            direction = float(self.random_state.choice([-1.0, 1.0]))
+            step = (
+                float(self.random_state.uniform(minimum_step, step_size))
+                if step_size > minimum_step
+                else float(step_size)
+            )
+            value = float(np.clip(current + direction * step, lower, upper))
             if value != current and value not in excluded_values:
                 candidate[dimension] = value
                 return self._clip(candidate)
@@ -126,6 +249,9 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
             if spec["kind"] == "continuous":
                 lower, upper = self.bounds[index]
                 if upper > lower:
+                    eligible.append(index)
+            elif spec["kind"] == "integer":
+                if self._step_size_bounds[index] is not None:
                     eligible.append(index)
             elif spec["kind"] == "categorical":
                 values = spec.get("values", [])
@@ -149,6 +275,8 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
         status,
         best_position,
         best_fitness,
+        step_size=None,
+        step_size_after=None,
     ):
         before = self.describe_solution_func(base_position)
         after = self.describe_solution_func(candidate)
@@ -169,7 +297,17 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
             ),
             "cache_hit": bool(cache_hit),
             "status": status,
-            "improved": status == "improved",
+            "improved": status in ("improved", "cache_hit_improved"),
+            "step_size": (
+                None
+                if self.dimension_specs[dimension]["kind"] == "categorical"
+                else abs(float(candidate[dimension] - base_position[dimension]))
+            ),
+            "step_size_before": step_size,
+            "step_size_after": step_size_after,
+            "coordinate_scale": self.dimension_specs[dimension].get(
+                "coordinate_scale", self.dimension_specs[dimension]["kind"]
+            ),
             "global_best_fitness": float(best_fitness),
             "global_best_position": np.asarray(best_position).tolist(),
             "base_position": np.asarray(base_position).tolist(),
@@ -177,14 +315,18 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
         }
         history.append(row)
         self._log(
-            "info" if status != "retry_exhausted" else "warning",
+            "info" if status not in ("retry_exhausted", "no_neighbor") else "warning",
             "igwo_local_search iteration=%s candidate=%s parameter=%s "
-            "previous=%s new=%s fitness=%s cache_hit=%s status=%s best=%s",
+            "previous=%s new=%s step_size=%s step_size_before=%s "
+            "step_size_after=%s fitness=%s cache_hit=%s status=%s best=%s",
             iteration,
             candidate_index,
             name,
             row["previous_value"],
             row["new_value"],
+            row["step_size"],
+            row["step_size_before"],
+            row["step_size_after"],
             row["candidate_fitness"],
             row["cache_hit"],
             status,
@@ -198,11 +340,14 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
         missing = 0
         attempts_without_progress = 0
         exhausted_dimensions = set()
-        max_total_attempts = self.population * self.retry_limit * max(self.dim, 1)
+        target_evaluations = self.local_search_candidates
+        max_total_attempts = (
+            target_evaluations * self.retry_limit * max(self.dim, 1)
+        )
 
-        while successful_evaluations < self.population:
+        while successful_evaluations < target_evaluations:
             if attempts_without_progress >= max_total_attempts:
-                missing = self.population - successful_evaluations
+                missing = target_evaluations - successful_evaluations
                 self._log(
                     "error",
                     "IGWO local search stopped at iteration=%s: %s unique "
@@ -215,7 +360,7 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
 
             dimension = self._best_dimension(best_position, exhausted_dimensions)
             if dimension is None:
-                missing = self.population - successful_evaluations
+                missing = target_evaluations - successful_evaluations
                 self._log(
                     "error",
                     "IGWO local search stopped at iteration=%s: no mutable "
@@ -231,12 +376,32 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
             for _ in range(self.retry_limit):
                 base_position = best_position.copy()
                 previous_fitness = best_fitness
+                step_size = self._step_sizes[dimension]
                 candidate = self._mutate_dimension(
-                    base_position, dimension, excluded_values=tried_values
+                    base_position,
+                    dimension,
+                    excluded_values=tried_values,
+                    step_size=step_size,
                 )
                 attempts_without_progress += 1
                 if candidate is None:
                     dimension_exhausted = True
+                    self._record_attempt(
+                        history,
+                        iteration,
+                        successful_evaluations + 1,
+                        dimension,
+                        base_position,
+                        base_position,
+                        previous_fitness,
+                        None,
+                        False,
+                        "no_neighbor",
+                        best_position,
+                        best_fitness,
+                        step_size,
+                        step_size,
+                    )
                     break
                 tried_values.add(float(candidate[dimension]))
                 if np.array_equal(candidate, base_position):
@@ -253,18 +418,36 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
                         "duplicate_candidate_retry",
                         best_position,
                         best_fitness,
+                        step_size,
+                        step_size,
                     )
                     continue
 
                 cached = self._is_cached(candidate)
                 if self._budget_blocks(candidate):
-                    missing = self.population - successful_evaluations
+                    missing = target_evaluations - successful_evaluations
                     self._log(
                         "warning",
                         "IGWO evaluation budget reached at iteration=%s; "
                         "%s unique local evaluations remain",
                         iteration,
                         missing,
+                    )
+                    self._record_attempt(
+                        history,
+                        iteration,
+                        successful_evaluations + 1,
+                        dimension,
+                        base_position,
+                        candidate,
+                        previous_fitness,
+                        None,
+                        False,
+                        "budget_blocked",
+                        best_position,
+                        best_fitness,
+                        step_size,
+                        step_size,
                     )
                     return (
                         best_position,
@@ -282,14 +465,25 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
                     agent_id=self.population + successful_evaluations + 1,
                 )
                 actual_cache_hit = bool(
-                    getattr(self.fitness_func, "last_cache_hit", cached)
+                    cached or getattr(self.fitness_func, "last_cache_hit", False)
                 )
                 signature = self._signature(candidate)
                 signature_is_cached = (
                     not hasattr(self.fitness_func, "is_cached")
                     and signature in self._known_signatures
                 )
-                if actual_cache_hit or signature_is_cached:
+                cache_hit = actual_cache_hit or signature_is_cached
+                improved = candidate_fitness > best_fitness
+                _, step_size_after = self._adapt_step_size(dimension, improved)
+                status = "evaluated"
+                if improved:
+                    best_position = candidate.copy()
+                    best_fitness = float(candidate_fitness)
+                    improvements += 1
+                    status = "improved"
+                    exhausted_dimensions.clear()
+
+                if cache_hit:
                     self._record_attempt(
                         history,
                         iteration,
@@ -300,22 +494,17 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
                         previous_fitness,
                         candidate_fitness,
                         True,
-                        "cache_hit_retry",
+                        "cache_hit_improved" if improved else "cache_hit_retry",
                         best_position,
                         best_fitness,
+                        step_size,
+                        step_size_after,
                     )
                     continue
 
                 self._known_signatures.add(signature)
                 successful_evaluations += 1
                 attempts_without_progress = 0
-                status = "evaluated"
-                if candidate_fitness > best_fitness:
-                    best_position = candidate.copy()
-                    best_fitness = float(candidate_fitness)
-                    improvements += 1
-                    status = "improved"
-                    exhausted_dimensions.clear()
                 self._record_attempt(
                     history,
                     iteration,
@@ -329,6 +518,8 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
                     status,
                     best_position,
                     best_fitness,
+                    step_size,
+                    step_size_after,
                 )
                 found_unique = True
                 break
@@ -356,6 +547,8 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
                     "retry_exhausted",
                     best_position,
                     best_fitness,
+                    self._step_sizes[dimension],
+                    self._step_sizes[dimension],
                 )
 
         return (
@@ -473,12 +666,24 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
             if budget_exhausted:
                 local_evaluation_counts.append(0)
                 local_improvements.append(0)
+                incomplete_local_evaluations += self.local_search_candidates
                 iteration_times.append(time.perf_counter() - iter_start)
-                iteration_summaries.append(
-                    self._summarize_iteration(
-                        iteration, fitness, wolves, pbest_fit, iter_start
-                    )
+                summary = self._summarize_iteration(
+                    iteration, fitness, wolves, pbest_fit, iter_start
                 )
+                summary.update(
+                    {
+                        "local_search_evaluations": 0,
+                        "local_search_improvements": 0,
+                        "local_search_missing_evaluations": (
+                            self.local_search_candidates
+                        ),
+                        "global_best_after_local_search": float(
+                            global_best_fitness
+                        ),
+                    }
+                )
+                iteration_summaries.append(summary)
                 break
 
             (
@@ -530,6 +735,12 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
             if budget_exhausted:
                 break
 
+        unattempted_iterations = max(
+            self.iterations - len(local_evaluation_counts), 0
+        )
+        incomplete_local_evaluations += (
+            unattempted_iterations * self.local_search_candidates
+        )
         unique_evaluations = self._fitness_cache_misses()
         cache_hits = self._fitness_cache_hits()
         if self.evaluation_budget is not None and unique_evaluations > self.evaluation_budget:
@@ -554,6 +765,12 @@ class ImprovedGreyWolfOptimizer(BaseOptimizer):
             "local_search_improvements": local_improvements,
             "local_search_evaluation_counts": local_evaluation_counts,
             "local_search_history": local_search_history,
+            "local_search_candidates_per_iteration": (
+                self.local_search_candidates
+            ),
+            "local_search_step_sizes": self._step_size_report(),
+            "configured_iterations": self.iterations,
+            "iterations_attempted": len(gwo_improvements),
             "local_search_success_rate": (
                 sum(local_improvements)
                 / max(sum(local_evaluation_counts), 1)

@@ -12,7 +12,9 @@ import numpy as np
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_STUDY_ROOT = ROOT / "results" / "igwo_comparison" / "paper_config_4x15"
+DEFAULT_STUDY_ROOT = (
+    ROOT / "results" / "igwo_comparison" / "paper_config_6x15_adaptive"
+)
 SEEDS = (42, 43, 44)
 METRICS = {
     "validation_accuracy": {
@@ -131,7 +133,10 @@ def _stats(values, higher_is_better):
 
 def _build_report(rows):
     report = {
-        "study": "CIFAR-10 IGWO paper parameters (population 4, iterations 15)",
+        "study": (
+            "CIFAR-10 IGWO adaptive guided local search "
+            "(population 6, iterations 15, 2 local candidates)"
+        ),
         "seeds": list(SEEDS),
         "interpretation": (
             "Descriptive results only; three seeds do not establish statistical "
@@ -269,8 +274,21 @@ def _plot_convergence(study_root, rows):
         ("GWO (existing)", "baseline", "#1f77b4"),
         ("IGWO", "igwo", "#ff7f0e"),
     ):
+        raw_curves = [
+            np.asarray(
+                row["comparison"][algorithm]["convergence_history"],
+                dtype=float,
+            )
+            for row in rows
+        ]
+        if any(len(curve) == 0 for curve in raw_curves):
+            raise ValueError(f"{algorithm} has an empty convergence history")
+        max_length = max(len(curve) for curve in raw_curves)
         curves = np.asarray(
-            [row["comparison"][algorithm]["convergence_history"] for row in rows],
+            [
+                np.pad(curve, (0, max_length - len(curve)), mode="edge")
+                for curve in raw_curves
+            ],
             dtype=float,
         )
         iterations = np.arange(1, curves.shape[1] + 1)

@@ -24,15 +24,19 @@ sys.path.insert(0, str(ROOT))
 from config import config_to_dict, load_config
 from experiment_runner import build_bounds, position_signature, run_single_experiment
 from optimizers.gwo import GreyWolfOptimizer
+from optimizers.igwo import DEFAULT_LOCAL_SEARCH_CANDIDATES
 from utils import setup_logging, write_json
 
 
 DEFAULT_CONFIG = ROOT / "results" / "main_experiment" / "config_used.json"
 DEFAULT_GWO_RUNS = ROOT / "results" / "main_experiment" / "GWO"
-DEFAULT_STUDY_ROOT = ROOT / "results" / "igwo_comparison" / "paper_config_4x15"
+DEFAULT_STUDY_ROOT = (
+    ROOT / "results" / "igwo_comparison" / "paper_config_6x15_adaptive"
+)
 DEFAULT_SEED = 42
-IGWO_POPULATION_SIZE = 4
+IGWO_POPULATION_SIZE = 6
 IGWO_ITERATION_COUNT = 15
+IGWO_LOCAL_SEARCH_CANDIDATES = DEFAULT_LOCAL_SEARCH_CANDIDATES
 MATCHED_CONFIG_KEYS = (
     "dataset",
     "model_name",
@@ -140,8 +144,8 @@ def _check_igwo_run(
             f"IGWO's raw initial positions differ from the seed-{seed} GWO "
             "population reconstructed from the saved search configuration"
         )
-    if len(summary["convergence_history"]) != summary["config"]["iteration_count"]:
-        raise AssertionError("IGWO did not complete all configured iterations")
+    if len(summary["convergence_history"]) > summary["config"]["iteration_count"]:
+        raise AssertionError("IGWO exceeded its configured iteration count")
     if summary["config"]["population_size"] != IGWO_POPULATION_SIZE:
         raise AssertionError("IGWO population size differs from the paper protocol")
     if summary["config"]["iteration_count"] != IGWO_ITERATION_COUNT:
@@ -154,17 +158,72 @@ def _check_igwo_run(
         raise AssertionError("IGWO evaluation budget differs from its GWO reference")
     if summary["unique_fitness_evaluations"] > evaluation_budget:
         raise AssertionError("IGWO exceeded the unique-training budget")
-    if summary["local_search_evaluation_count"] > (
-        IGWO_POPULATION_SIZE * IGWO_ITERATION_COUNT
+    if (
+        summary["local_search_candidates_per_iteration"]
+        != IGWO_LOCAL_SEARCH_CANDIDATES
     ):
-        raise AssertionError("IGWO local search exceeded its population-sized budget")
+        raise AssertionError("IGWO local-search target differs from the configuration")
     trace_path = study_dir / "CIFAR10" / "IGWO" / "run_01" / "igwo_trace.json"
     trace = _read_json(trace_path)
     local_counts = trace["local_search_evaluations_by_iteration"]
-    if any(count > IGWO_POPULATION_SIZE for count in local_counts):
-        raise AssertionError("A local-search iteration exceeded the IGWO population")
+    if trace["local_search_candidates_per_iteration"] != (
+        IGWO_LOCAL_SEARCH_CANDIDATES
+    ):
+        raise AssertionError("IGWO trace has an unexpected local-search target")
+    if trace["configured_iterations"] != IGWO_ITERATION_COUNT:
+        raise AssertionError("IGWO trace iteration configuration is inconsistent")
+    if trace["iterations_attempted"] > IGWO_ITERATION_COUNT:
+        raise AssertionError("IGWO attempted more than the configured iterations")
+    if len(local_counts) != trace["iterations_attempted"]:
+        raise AssertionError("IGWO iteration and local-search traces do not align")
+    if len(summary["convergence_history"]) > trace["iterations_attempted"]:
+        raise AssertionError("IGWO convergence history exceeds attempted iterations")
+    if len(local_counts) > IGWO_ITERATION_COUNT or any(
+        count > IGWO_LOCAL_SEARCH_CANDIDATES for count in local_counts
+    ):
+        raise AssertionError("IGWO local search exceeded its configured target")
     if sum(local_counts) != summary["local_search_evaluation_count"]:
         raise AssertionError("IGWO local-search trace count does not match its summary")
+    if (
+        summary["local_search_evaluation_count"]
+        + summary["incomplete_local_evaluations"]
+        != IGWO_LOCAL_SEARCH_CANDIDATES * IGWO_ITERATION_COUNT
+    ):
+        raise AssertionError("IGWO incomplete local evaluations are misreported")
+    if trace["incomplete_local_evaluations"] != summary[
+        "incomplete_local_evaluations"
+    ]:
+        raise AssertionError("IGWO local-search incomplete count differs from trace")
+    required_attempt_fields = {
+        "parameter",
+        "previous_value",
+        "new_value",
+        "step_size",
+        "step_size_before",
+        "step_size_after",
+        "coordinate_scale",
+        "candidate_fitness",
+        "improved",
+        "cache_hit",
+    }
+    if any(
+        not required_attempt_fields.issubset(attempt)
+        for attempt in trace["local_search_attempts"]
+    ):
+        raise AssertionError("IGWO local-search trace is missing candidate details")
+    step_specs = {
+        spec["parameter"]: spec for spec in trace["local_search_step_sizes"]
+    }
+    for attempt in trace["local_search_attempts"]:
+        step_spec = step_specs[attempt["parameter"]]
+        if attempt["step_size_before"] is None:
+            continue
+        minimum = step_spec["minimum_step_size"]
+        maximum = step_spec["maximum_step_size"]
+        for field in ("step_size_before", "step_size_after"):
+            value = attempt[field]
+            if value is not None and not minimum <= value <= maximum:
+                raise AssertionError("IGWO adaptive step size exceeded its bounds")
 
     confusion_path = study_dir / "CIFAR10" / "IGWO" / "run_01" / "confusion_matrix.json"
     confusion = _read_json(confusion_path)
@@ -408,7 +467,7 @@ def run_study(config_path, gwo_runs_dir, study_dir, seed, gpu_lock_path=None):
     study_dir.mkdir(parents=True)
     config.results_dir = str(study_dir.resolve())
     study_manifest = {
-        "study": f"IGWO CIFAR-10 matched to existing GWO seed {seed}",
+        "study": f"IGWO CIFAR-10 adaptive guided local search seed {seed}",
         "seed": seed,
         "status": "running",
         "source_config": str(config_path.resolve()),
@@ -422,6 +481,17 @@ def run_study(config_path, gwo_runs_dir, study_dir, seed, gpu_lock_path=None):
         "torch": str(torch.__version__),
         "device": torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu",
         "igwo_config": config_to_dict(config),
+        "local_search_candidates_per_iteration": (
+            IGWO_LOCAL_SEARCH_CANDIDATES
+        ),
+        "local_search": {
+            "method": "adaptive_guided_local_search",
+            "candidates_per_iteration": IGWO_LOCAL_SEARCH_CANDIDATES,
+            "step_shrink_factor": 0.5,
+            "step_growth_factor": 2.0,
+            "continuous_step_range_fraction": [0.01, 0.5],
+            "continuous_initial_step_range_fraction": 0.1,
+        },
         "evaluation_budget_unique_trainings": evaluation_budget,
         "standard_gwo_reference": {
             "population_size": 8,
